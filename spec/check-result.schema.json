@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adhd-tools.invalid/spec/check-result.schema.json",
+  "title": "Check result",
+  "description": "What adhd_core returns for one bundle against one slot. Same bundle, same slot, same core version: same result, byte for byte.",
+  "type": "object",
+  "required": ["schema", "core", "slot", "bundle_sha256", "verdict", "checks"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "adhd/check-result@0" },
+    "core": { "type": "string", "description": "adhd_core version that ran the checks." },
+    "slot": { "type": "string" },
+    "bundle_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hash of the canonical submission.json, which pins every file by hash."
+    },
+    "verdict": {
+      "description": "pass: every check passed. fail: at least one failed. incomplete: nothing failed but some checks were skipped, e.g. Blender checks run without Blender. Only CI can return a final pass.",
+      "enum": ["pass", "fail", "incomplete"]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "description": "Stable check id, e.g. model.tris, sound.loudness.", "pattern": "^[a-z]+\\.[a-z_]+$" },
+          "status": { "enum": ["pass", "fail", "skip"] },
+          "measured": { "description": "What was measured, when it is a single value." },
+          "limit": { "description": "The slot's limit for it." },
+          "message": { "type": "string", "description": "Plain English: what was found." },
+          "fix": { "type": "string", "description": "Plain English: how to fix it. Present on every fail." },
+          "where": { "type": "string", "description": "File, prim path or frame the problem is in." }
+        },
+        "if": { "properties": { "status": { "const": "fail" } } },
+        "then": { "required": ["fix"] }
+      }
+    }
+  }
+}

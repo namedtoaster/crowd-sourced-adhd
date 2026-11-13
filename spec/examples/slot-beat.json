@@ -1,0 +1,13 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "BEAT-04",
+  "film": 1,
+  "phase": "story",
+  "role": "story",
+  "mode": "open-call",
+  "title": "Beat 4: the kettle boils over",
+  "brief": "Between beat 3 and beat 5. Something in the kitchen gets out of hand. One beat, present tense, what we see.",
+  "depends_on": ["BEAT-03"],
+  "outputs": [{ "path": "beat.md", "kind": "markdown" }],
+  "limits": { "max_words": 80, "required_fields": ["location", "time_of_day"] }
+}

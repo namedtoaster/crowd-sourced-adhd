@@ -1,0 +1,13 @@
+{
+  "schema": "adhd/check-result@0",
+  "core": "0.1.0",
+  "slot": "SH-012-light",
+  "bundle_sha256": "9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b",
+  "verdict": "fail",
+  "checks": [
+    { "id": "lighting.count", "status": "pass", "measured": 5, "limit": 6, "message": "5 lights. The slot allows 6." },
+    { "id": "lighting.render_time", "status": "fail", "measured": 5210, "limit": 4000, "where": "frame 1040",
+      "message": "Frame 1040 took 5.2 s in the preview render. The slot allows 4.0 s.",
+      "fix": "The area light on the window has soft shadows at radius 1.5 m. Try 0.5 m, or turn off shadows on the hall fill." }
+  ]
+}

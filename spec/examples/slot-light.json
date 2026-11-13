@@ -1,0 +1,15 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "SH-012-light",
+  "film": 1,
+  "phase": "assets-look",
+  "role": "lighting",
+  "mode": "claim",
+  "title": "Lighting, SH-012",
+  "brief": "Late afternoon through the kitchen window. Warm key, cool fill from the hall.",
+  "shot": "SH-012",
+  "depends_on": ["SH-012-anim"],
+  "context": ["shots/SH-012/blocking.usda", "shots/SH-012/anim.usda", "sets/kitchen/set.usda"],
+  "outputs": [{ "path": "lights.usda", "kind": "usd-layer" }],
+  "limits": { "max_lights": 6, "max_render_ms": 4000 }
+}

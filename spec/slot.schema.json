@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adhd-tools.invalid/spec/slot.schema.json",
+  "title": "Slot spec",
+  "description": "One unit of work in a film. Lives in the film repo at slots/<id>.json. Written by the owner or the backend, read by every tool.",
+  "type": "object",
+  "required": ["schema", "id", "film", "phase", "role", "mode", "title", "brief", "outputs", "limits"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "adhd/slot@0" },
+    "id": {
+      "description": "Stable slot id, e.g. SH-012-light, BEAT-04, PROP-kettle.",
+      "type": "string",
+      "pattern": "^[A-Z]+(-[A-Za-z0-9]+)+$"
+    },
+    "film": { "type": "integer", "minimum": 1 },
+    "phase": { "$ref": "#/$defs/phase" },
+    "role": { "$ref": "#/$defs/role" },
+    "mode": {
+      "description": "open-call: anyone enters during a window, then a vote. claim: one person holds it, then checks and review.",
+      "enum": ["open-call", "claim"]
+    },
+    "title": { "type": "string", "maxLength": 80 },
+    "brief": {
+      "description": "What the slot is for, in plain words. Shown to contributors.",
+      "type": "string",
+      "maxLength": 1200
+    },
+    "shot": {
+      "description": "Shot this slot belongs to, if any.",
+      "type": "string",
+      "pattern": "^SH-[0-9]{3}$"
+    },
+    "depends_on": {
+      "description": "Slot ids that must be merged before this one opens.",
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "default": []
+    },
+    "context": {
+      "description": "Scene layers to load read only so the work sits in place: the shot's greybox, camera, neighbouring assets.",
+      "type": "array",
+      "items": { "type": "string", "description": "Path in the film repo to a USD layer." },
+      "default": []
+    },
+    "fit": {
+      "description": "Prim whose bounding box the work must fit inside, for model slots.",
+      "type": "string"
+    },
+    "outputs": {
+      "description": "Files a submission must contain, by path inside the bundle.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "description": "Exact path, or a glob such as frames/*.png." },
+          "kind": { "$ref": "#/$defs/fileKind" }
+        }
+      }
+    },
+    "limits": {
+      "description": "Role specific limits. Which shape applies depends on role.",
+      "type": "object"
+    }
+  },
+  "allOf": [
+    { "if": { "properties": { "role": { "const": "story" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/story" } } } },
+    { "if": { "properties": { "role": { "const": "title" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/story" } } } },
+    { "if": { "properties": { "role": { "const": "storyboard" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/storyboard" } } } },
+    { "if": { "properties": { "role": { "const": "blocking" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/blocking" } } } },
+    { "if": { "properties": { "role": { "const": "model" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/model" } } } },
+    { "if": { "properties": { "role": { "const": "material" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/material" } } } },
+    { "if": { "properties": { "role": { "const": "animation" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/animation" } } } },
+    { "if": { "properties": { "role": { "const": "lighting" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/lighting" } } } },
+    { "if": { "properties": { "role": { "const": "sound" } } }, "then": { "properties": { "limits": { "$ref": "#/$defs/limits/sound" } } } }
+  ],
+  "$defs": {
+    "phase": { "enum": ["spine", "story", "greybox", "assets-look", "render-title"] },
+    "role": { "enum": ["story", "title", "storyboard", "blocking", "model", "material", "animation", "lighting", "sound"] },
+    "fileKind": { "enum": ["markdown", "json", "png", "usd-layer", "usd-asset", "gltf", "material-recipe", "wav"] },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "min": { "type": "number" }, "max": { "type": "number" } }
+    },
+    "limits": {
+      "story": {
+        "type": "object",
+        "required": ["max_words"],
+        "additionalProperties": false,
+        "properties": {
+          "max_words": { "type": "integer", "minimum": 1 },
+          "required_fields": {
+            "description": "Front matter keys the markdown must have, e.g. location, time_of_day.",
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "storyboard": {
+        "type": "object",
+        "required": ["frames", "aspect", "min_width_px"],
+        "additionalProperties": false,
+        "properties": {
+          "frames": { "$ref": "#/$defs/range" },
+          "aspect": { "type": "string", "pattern": "^[0-9]+:[0-9]+$" },
+          "min_width_px": { "type": "integer", "minimum": 1 },
+          "max_file_mb": { "type": "number" }
+        }
+      },
+      "blocking": {
+        "type": "object",
+        "required": ["duration_frames"],
+        "additionalProperties": false,
+        "properties": {
+          "duration_frames": { "$ref": "#/$defs/range" },
+          "lens_mm": { "$ref": "#/$defs/range" },
+          "stay_in_bounds": { "type": "string", "description": "Prim the camera and actors must stay inside." }
+        }
+      },
+      "model": {
+        "type": "object",
+        "required": ["max_tris", "max_texture_px"],
+        "additionalProperties": false,
+        "properties": {
+          "max_tris": { "type": "integer", "minimum": 1 },
+          "max_texture_px": { "type": "integer", "minimum": 1 },
+          "texel_density_px_per_m": { "$ref": "#/$defs/range" },
+          "fit_tolerance": { "type": "number", "description": "How far past the fit box the asset may go, as a fraction. 0.05 is 5 percent." }
+        }
+      },
+      "material": {
+        "type": "object",
+        "required": ["palette", "max_delta_e", "node_allowlist"],
+        "additionalProperties": false,
+        "properties": {
+          "palette": { "type": "string", "description": "Path to the frozen palette in the film repo." },
+          "max_delta_e": { "type": "number", "description": "CIEDE2000 distance allowed from the nearest palette colour." },
+          "node_allowlist": { "type": "string", "description": "Path to the allowed shader nodes and value ranges." }
+        }
+      },
+      "animation": {
+        "type": "object",
+        "required": ["rigs", "duration_frames"],
+        "additionalProperties": false,
+        "properties": {
+          "rigs": { "type": "array", "items": { "type": "string" }, "description": "Library rig ids the shot may use." },
+          "duration_frames": { "$ref": "#/$defs/range" }
+        }
+      },
+      "lighting": {
+        "type": "object",
+        "required": ["max_lights", "max_render_ms"],
+        "additionalProperties": false,
+        "properties": {
+          "max_lights": { "type": "integer", "minimum": 1 },
+          "max_render_ms": { "type": "integer", "description": "Per frame, measured in the reference preview render." }
+        }
+      },
+      "sound": {
+        "type": "object",
+        "required": ["loudness_lufs", "sample_rate_hz", "duration_s"],
+        "additionalProperties": false,
+        "properties": {
+          "loudness_lufs": { "$ref": "#/$defs/range" },
+          "true_peak_dbtp_max": { "type": "number" },
+          "sample_rate_hz": { "type": "integer" },
+          "channels": { "enum": [1, 2] },
+          "duration_s": { "$ref": "#/$defs/range" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adhd-tools.invalid/spec/submission.schema.json",
+  "title": "Submission bundle manifest",
+  "description": "submission.json at the root of every bundle. Every front end (Blender add-on, web form, desktop app, CLI) writes this same shape.",
+  "type": "object",
+  "required": ["schema", "slot", "film", "contributor", "revision", "files", "tools", "dco"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "adhd/submission@0" },
+    "slot": { "type": "string", "description": "Slot id this is for." },
+    "film": { "type": "integer", "minimum": 1 },
+    "contributor": {
+      "type": "object",
+      "required": ["github_id", "github_login"],
+      "additionalProperties": false,
+      "properties": {
+        "github_id": { "type": "integer", "description": "Numeric id. Logins can be renamed, ids cannot." },
+        "github_login": { "type": "string" }
+      }
+    },
+    "revision": {
+      "description": "1 for the first submission. Resubmits after notes increase it.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "message": {
+      "description": "Optional note to reviewers or voters.",
+      "type": "string",
+      "maxLength": 500
+    },
+    "files": {
+      "description": "Every file in the bundle except submission.json. Binaries are uploaded to storage by sha256; text files also travel in the PR.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "bytes"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "pattern": "^[a-z0-9_./-]+$", "description": "Relative, lower case, no spaces." },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "bytes": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "tools": {
+      "description": "What made the bundle. Recorded for debugging, never used by checks.",
+      "type": "object",
+      "required": ["client", "core"],
+      "additionalProperties": false,
+      "properties": {
+        "client": { "type": "string", "description": "e.g. adhd-blender 0.1.0, adhd-web 0.1.0" },
+        "core": { "type": "string", "description": "adhd_core version the client checked with." },
+        "blender": { "type": "string" }
+      }
+    },
+    "dco": {
+      "description": "Developer Certificate of Origin, accepted in the client before upload. Becomes the Signed-off-by trailer.",
+      "type": "object",
+      "required": ["version", "signed_off_by"],
+      "additionalProperties": false,
+      "properties": {
+        "version": { "const": "1.1" },
+        "signed_off_by": {
+          "type": "string",
+          "description": "Name <email>. A GitHub noreply address is fine.",
+          "pattern": "^.+ <[^<>@\\s]+@[^<>@\\s]+>$"
+        }
+      }
+    }
+  }
+}

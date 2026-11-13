@@ -88,8 +88,8 @@ safe because of four rules:
 
 ### core (`adhd_core`)
 
-- Python 3.11, because Blender 4.2+ ships 3.11 and the add-on imports the
-  same code.
+- Python 3.11 or newer. Blender 4.2 ships 3.11 and Blender 5.2 ships 3.13,
+  and the add-on imports the same code.
 - Two layers of checks:
   - **Plain checks** run anywhere with no Blender: word counts, image sizes,
     audio loudness, JSON shape, USD stats via `usd-core`.
@@ -166,19 +166,20 @@ public bundle format defined in `spec/`.
 
 ## Hard problems to settle first
 
-Each of these is a short spike before any real building.
+Each of these is a short spike before any real building. A and B are
+settled; full results and renders are in [spikes/README.md](../spikes/README.md).
 
-**A. Materials do not survive USD.** Blender's USD export flattens shader
-node trees into `UsdPreviewSurface`, so an Eevee look made in Blender will
-not come back intact. Proposal: materials travel as a **recipe**, a JSON
-node graph restricted to the allowlist, and the scene builder rebuilds the
-nodes in Blender. Safe (no code), diffable, easy to check. Spike: write the
-serializer for the allowlist, round trip three materials, render compare.
+**A. Materials: settled, recipes.** Through USD, every node graph collapses
+to a bare Principled BSDF, with or without MaterialX (Blender writes
+MaterialX but does not read it back). A JSON node recipe rebuilt node by
+node renders pixel identical in Eevee. Materials travel as recipes; USD
+carries geometry only.
 
-**B. Animation through USD.** Rigs come from a library, so the add-on only
-needs to export the animation, not the rig. Spike: animate a library rig in
-Blender, export, rebuild, compare frames. If USD skeletal animation is
-unreliable, fall back to baked transforms or an action recipe.
+**B. Animation: settled, USD skeletal animation.** A skinned rig round
+trips through USD within 0.001 mm per vertex over 48 frames, and so does
+the animation alone applied to a fresh copy of the rig. The receiving rig
+must use quaternion rotation, and bone names and rest pose must match the
+library rig. Still to do: export the animation without the mesh.
 
 **C. Who authors the PR.** If the App pushes branches into the public
 repo, Actions on those PRs can read repository secrets, unlike fork PRs. So
@@ -190,7 +191,9 @@ contributor's, accepted in the client before upload.
 **D. Pinned Blender.** Checks and renders must use one exact Blender
 version, or verdicts and frames will drift. CI, the desktop app and the
 render client pin the same version. The add-on supports a range but sends
-its exports to the pinned version for the full check.
+its exports to the pinned version for the full check. Recommendation:
+pin Blender 5.2 LTS. It is supported for two years, and Eevee renders on
+it were bit for bit repeatable in spike A.
 
 ## Scene loading (to design later)
 
@@ -215,11 +218,11 @@ Starting notes, not decisions:
 - **The add-on loads by preference:** scope (this shot, this set, whole
   film) times detail (boxes, proxies, full). Default: full detail for your
   own slot and its neighbours, proxies for everything else in the shot.
-- **Open question:** Blender imports USD as a one time conversion, it does
-  not keep a live stage. So the add-on probably reads the stage itself
-  (with the `pxr` bindings, if Blender's bundled Python has them, to
-  verify) and builds the Blender scene from it, swapping detail levels in
-  place.
+- **The add-on reads the stage itself.** Blender imports USD as a one time
+  conversion and does not keep a live stage, but Blender 5.2 bundles the
+  `pxr` bindings (OpenUSD 26.03). So the add-on can open the stage with
+  payloads unloaded, pick a detail level per asset, and build or swap the
+  Blender objects itself.
 
 ## Build order
 
@@ -230,8 +233,8 @@ Follows the film's phases, so each tool exists just before it is needed.
    *Started 13 Nov 2026:* the three schemas are in `spec/`, and `core/` has
    the bundle checks, story and storyboard checks and the `adhd` CLI, with
    tests. Submission CI (`adhd ci` plus the workflow), the sandbox film
-   and the one repo layout followed the same day. Still to do: sound
-   checks, spikes, a first run on real GitHub.
+   and the one repo layout followed the same day, then spikes A and B.
+   Still to do: sound checks, spikes C and D, a first run on real GitHub.
 1. **Spine and Story (phases 1 and 2).** Text and image submissions through
    the web form. No install for anyone.
 2. **Greybox (phase 3).** Blender add-on, blocking role only: sign in,
@@ -251,8 +254,11 @@ Follows the film's phases, so each tool exists just before it is needed.
 - 2026-11-13: Licence: `blender/` under GPL 3.0 or later (Blender add-ons
   that use `bpy` effectively have to be GPL), everything else under
   Apache 2.0 (patent grant, and compatible with GPL 3).
+- 2026-11-13: Materials travel as JSON node recipes, animation as USD
+  skeletal animation on library rigs (spikes A and B).
 
 ## Open decisions
 
 - Oldest Blender version the add-on supports (4.2 LTS is the floor for the
-  extension format).
+  extension format), and which version to pin for checks and renders
+  (5.2 LTS recommended).

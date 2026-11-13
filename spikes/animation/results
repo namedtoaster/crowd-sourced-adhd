@@ -1,0 +1,37 @@
+{
+  "blender": "5.2.3 LTS",
+  "frames": 48,
+  "tolerance_mm": 0.1,
+  "vertices": 3744,
+  "max_motion_m": 1.343,
+  "usd_bytes": 900644,
+  "usd_roundtrip": {
+    "meshes": 1,
+    "armatures": 1,
+    "bones": [
+      "bone0",
+      "bone1",
+      "bone2"
+    ],
+    "action": "RigAction",
+    "fcurves": 30,
+    "keys_per_curve": 48,
+    "fcurve_paths_sample": [
+      "pose.bones[\"bone0\"].location",
+      "pose.bones[\"bone0\"].rotation_quaternion",
+      "pose.bones[\"bone0\"].scale",
+      "pose.bones[\"bone1\"].location"
+    ],
+    "pass": true,
+    "max_error_mm": 0.0011,
+    "mean_error_mm": 0.00014,
+    "worst_frame": 23
+  },
+  "library_rig": {
+    "bones_match": true,
+    "pass": true,
+    "max_error_mm": 0.0011,
+    "mean_error_mm": 0.00014,
+    "worst_frame": 23
+  }
+}

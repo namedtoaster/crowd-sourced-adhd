@@ -1,0 +1,109 @@
+{
+  "blender": "5.2.3 LTS",
+  "noise_floor": {
+    "mean_0_255": 0.0,
+    "per_material_0_255": {
+      "clay": 0.0,
+      "rust": 0.0,
+      "toon": 0.0
+    },
+    "pixels_off_by_more_than_8": 0.0
+  },
+  "recipe": {
+    "diff": {
+      "mean_0_255": 0.0,
+      "per_material_0_255": {
+        "clay": 0.0,
+        "rust": 0.0,
+        "toon": 0.0
+      },
+      "pixels_off_by_more_than_8": 0.0
+    },
+    "recipe_bytes": 11222,
+    "node_types": {
+      "clay": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ],
+      "rust": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeBump",
+        "ShaderNodeMapRange",
+        "ShaderNodeOutputMaterial",
+        "ShaderNodeTexNoise",
+        "ShaderNodeValToRGB"
+      ],
+      "toon": [
+        "ShaderNodeBsdfDiffuse",
+        "ShaderNodeEmission",
+        "ShaderNodeLayerWeight",
+        "ShaderNodeMix",
+        "ShaderNodeOutputMaterial",
+        "ShaderNodeShaderToRGB",
+        "ShaderNodeValToRGB"
+      ]
+    }
+  },
+  "usd_preview": {
+    "diff": {
+      "mean_0_255": 18.331,
+      "per_material_0_255": {
+        "clay": 0.0,
+        "rust": 32.769,
+        "toon": 22.225
+      },
+      "pixels_off_by_more_than_8": 30.26
+    },
+    "materials_after_import": [
+      "clay",
+      "rust",
+      "toon"
+    ],
+    "node_types_after_import": {
+      "clay": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ],
+      "rust": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ],
+      "toon": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ]
+    },
+    "usd_bytes": 1579312
+  },
+  "usd_materialx": {
+    "diff": {
+      "mean_0_255": 18.331,
+      "per_material_0_255": {
+        "clay": 0.0,
+        "rust": 32.769,
+        "toon": 22.225
+      },
+      "pixels_off_by_more_than_8": 30.26
+    },
+    "materials_after_import": [
+      "clay",
+      "rust",
+      "toon"
+    ],
+    "node_types_after_import": {
+      "clay": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ],
+      "rust": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ],
+      "toon": [
+        "ShaderNodeBsdfPrincipled",
+        "ShaderNodeOutputMaterial"
+      ]
+    },
+    "usd_bytes": 1592103
+  }
+}

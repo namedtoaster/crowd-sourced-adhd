@@ -15,12 +15,13 @@ SCHEMAS = ("slot", "submission", "check-result")
 
 def _read_schema(name: str) -> dict[str, Any]:
     filename = f"{name}.schema.json"
-    packaged = resources.files("adhd_core") / "spec" / filename
-    if packaged.is_file():
-        return json.loads(packaged.read_text(encoding="utf-8"))
-    # Running from a checkout: core/src/adhd_core/spec.py -> repo/spec/
+    # Running from a checkout (editable install, CI): core/src/adhd_core/spec.py
+    # -> repo/spec/. Prefer it, so edits to spec/ take effect without a reinstall.
     repo_copy = Path(__file__).resolve().parents[3] / "spec" / filename
-    return json.loads(repo_copy.read_text(encoding="utf-8"))
+    if repo_copy.is_file():
+        return json.loads(repo_copy.read_text(encoding="utf-8"))
+    packaged = resources.files("adhd_core") / "spec" / filename
+    return json.loads(packaged.read_text(encoding="utf-8"))
 
 
 @cache

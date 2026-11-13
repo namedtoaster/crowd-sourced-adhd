@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://adhd-tools.invalid/spec/submission.schema.json",
+  "$id": "https://crowd-sourced-adhd.invalid/spec/submission.schema.json",
   "title": "Submission bundle manifest",
   "description": "submission.json at the root of every bundle. Every front end (Blender add-on, web form, desktop app, CLI) writes this same shape.",
   "type": "object",
@@ -9,7 +9,7 @@
   "properties": {
     "schema": { "const": "adhd/submission@0" },
     "slot": { "type": "string", "description": "Slot id this is for." },
-    "film": { "type": "integer", "minimum": 1 },
+    "film": { "type": "integer", "minimum": 0, "description": "0 is the sandbox film, for practice. Never rendered." },
     "contributor": {
       "type": "object",
       "required": ["github_id", "github_login"],

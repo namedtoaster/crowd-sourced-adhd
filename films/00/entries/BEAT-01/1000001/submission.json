@@ -1,0 +1,25 @@
+{
+  "schema": "adhd/submission@0",
+  "slot": "BEAT-01",
+  "film": 0,
+  "contributor": {
+    "github_id": 1000001,
+    "github_login": "example_writer"
+  },
+  "revision": 1,
+  "files": [
+    {
+      "path": "beat.md",
+      "sha256": "eed1df5ab94fe8cb46397e4b42e2354c735298c935d684ac1209982e503d7319",
+      "bytes": 135
+    }
+  ],
+  "tools": {
+    "client": "adhd-cli 0.1.0",
+    "core": "0.1.0"
+  },
+  "dco": {
+    "version": "1.1",
+    "signed_off_by": "Example Writer <1000001+example_writer@users.noreply.github.com>"
+  }
+}

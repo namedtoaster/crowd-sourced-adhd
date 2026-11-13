@@ -1,10 +1,15 @@
 # Contributor tools: design (draft)
 
-Status: thinking it over, nothing built. Last updated 13 Nov 2026.
+Status: checker and submission CI built, everything else designed only.
+Last updated 13 Nov 2026.
 
-This repo will be public. It holds the tools that run on contributors'
-machines and in the film repo's CI. It does not hold the private mechanics
-(caps, votes, reputation, thresholds, render coordinator) or the player page.
+This repo will be public. It holds all the public parts in one place: the
+tools that run on contributors' machines, the CI that checks submissions,
+and the films themselves (slots, spine, entries, scene layers). It does not
+hold the private mechanics (caps, votes, reputation, thresholds, render
+coordinator) or the player page.
+
+The pipeline is drawn in [PIPELINE.md](PIPELINE.md).
 
 ## The one idea: everything is a submission bundle
 
@@ -18,14 +23,14 @@ submission/
 ```
 
 One Python package, `adhd_core`, knows how to build a bundle, check it and
-explain the result. The Blender add-on, the desktop app, a CLI and the film
-repo's CI all call the same checks. That keeps the promise "the same file
+explain the result. The Blender add-on, the desktop app, a CLI and the
+submission CI all call the same checks. That keeps the promise "the same file
 always gets the same verdict", and it means a new kind of work is one new
 role definition plus its checks, not a new program.
 
 The verdict is a pure function of three things: the bundle, the slot spec
-(from the film repo), and the `adhd_core` version (pinned by the film repo).
-No network, no clock, no randomness.
+(from `main`), and the `adhd_core` version (from `main`). No network, no
+clock, no randomness.
 
 ## What each kind of work needs
 
@@ -54,12 +59,32 @@ Two things fall out of this table:
 One shared core, three front ends sized to the work.
 
 ```
-adhd-tools/
+crowd-sourced-adhd/
   spec/      JSON Schemas: slot spec, submission.json, check result
-  core/      adhd_core (Python 3.11): bundle, checks, explain, CLI
-  blender/   Blender extension: claim, open context, live checks, submit
-  app/       desktop app (Tauri): drop zone, status and notes, render mode   [later]
+  core/      adhd_core (Python 3.11): bundle, checks, CI, CLI
+  blender/   Blender extension: claim, open context, live checks, submit   [later]
+  app/       desktop app (Tauri): drop zone, status and notes, render mode  [later]
+  films/     00 is the sandbox, 01 is Film #1. See films/README.md
+  .github/   submission CI, core tests, CODEOWNERS
 ```
+
+### One repo, four rules
+
+Tools and films share one public repo so they cannot drift apart. That is
+safe because of four rules:
+
+1. **Submissions are judged by `main`, never by themselves.** CI checks out
+   `main` for the checker and slot specs, and the PR head separately as
+   data that is never executed.
+2. **A submission PR may only add files inside one entry folder**,
+   `films/NN/entries/SLOT-ID/GITHUB_ID/`. `adhd ci` fails anything else. A
+   PR could still edit the workflow file to fake a pass, so the GitHub App
+   checks scope itself and never merges a PR that touches anything outside
+   one entry.
+3. **Code owners on everything except entries**, enforced by branch
+   protection. Tools, slots, spine, scene and CI need the owner's review.
+4. **A licence per folder:** Apache 2.0 at the root, GPL 3.0 or later in
+   `blender/`, CC BY 4.0 in `films/`.
 
 ### core (`adhd_core`)
 
@@ -128,11 +153,14 @@ public bundle format defined in `spec/`.
 2. Client builds the bundle and runs checks locally.
 3. Binary files upload to R2 by content hash, through presigned URLs from
    the backend. Files already there are skipped, so resubmits are fast.
-4. The backend (the private GitHub App) creates a branch with
-   `submission.json`, the manifest entries and any text files, then opens
-   the PR. Binaries never enter Git.
-5. The film repo's CI fetches blobs by hash and runs `adhd_core` at the
-   pinned version. Same verdict as the local run, or something is broken.
+4. The backend (the private GitHub App) creates a branch adding
+   `films/NN/entries/SLOT-ID/GITHUB_ID/` with `submission.json` and any
+   text files (`.md`, `.json`, `.usda`, up to 256 KB), then opens the PR.
+   Binaries never enter Git.
+5. CI (`.github/workflows/check-submission.yml`) runs `adhd ci` from `main`:
+   scope, slot, contributor folder, then fetches binaries from
+   `$ADHD_BLOB_BASE_URL/<sha256>` and runs the checks. Same verdict as the
+   local run, or something is broken.
 6. Status and notes flow back to every client through the backend (polling
    is fine to start).
 
@@ -152,7 +180,7 @@ needs to export the animation, not the rig. Spike: animate a library rig in
 Blender, export, rebuild, compare frames. If USD skeletal animation is
 unreliable, fall back to baked transforms or an action recipe.
 
-**C. Who authors the PR.** If the App pushes branches into the public film
+**C. Who authors the PR.** If the App pushes branches into the public
 repo, Actions on those PRs can read repository secrets, unlike fork PRs. So
 either the public repo holds **no secrets at all** (simplest, and already
 the plan) or the App pushes to a bot owned fork. Credit is recorded by the
@@ -201,7 +229,9 @@ Follows the film's phases, so each tool exists just before it is needed.
    checks, CLI. CI needs this before anything else. Spikes A to D.
    *Started 13 Nov 2026:* the three schemas are in `spec/`, and `core/` has
    the bundle checks, story and storyboard checks and the `adhd` CLI, with
-   tests. Still to do: sound checks, the film repo CI workflow, spikes.
+   tests. Submission CI (`adhd ci` plus the workflow), the sandbox film
+   and the one repo layout followed the same day. Still to do: sound
+   checks, spikes, a first run on real GitHub.
 1. **Spine and Story (phases 1 and 2).** Text and image submissions through
    the web form. No install for anyone.
 2. **Greybox (phase 3).** Blender add-on, blocking role only: sign in,
@@ -215,15 +245,14 @@ Follows the film's phases, so each tool exists just before it is needed.
 
 - 2026-11-13: Story beats, title entries and storyboards are submitted
   through a web form on the player page.
-- 2026-11-13: Validators live in this repo. The film repo pins an
-  `adhd_core` version.
+- 2026-11-13: Validators live in this repo.
+- 2026-11-13: One public repo for tools and films, named
+  `crowd-sourced-adhd`, under the four rules above. Film 00 is a sandbox.
 - 2026-11-13: Licence: `blender/` under GPL 3.0 or later (Blender add-ons
   that use `bpy` effectively have to be GPL), everything else under
   Apache 2.0 (patent grant, and compatible with GPL 3).
 
 ## Open decisions
 
-- Repo name. `adhd-tools` is a placeholder; easy to change before it goes
-  public.
 - Oldest Blender version the add-on supports (4.2 LTS is the floor for the
   extension format).

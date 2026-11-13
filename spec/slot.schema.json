@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://adhd-tools.invalid/spec/slot.schema.json",
+  "$id": "https://crowd-sourced-adhd.invalid/spec/slot.schema.json",
   "title": "Slot spec",
   "description": "One unit of work in a film. Lives in the film repo at slots/<id>.json. Written by the owner or the backend, read by every tool.",
   "type": "object",
@@ -13,7 +13,7 @@
       "type": "string",
       "pattern": "^[A-Z]+(-[A-Za-z0-9]+)+$"
     },
-    "film": { "type": "integer", "minimum": 1 },
+    "film": { "type": "integer", "minimum": 0, "description": "0 is the sandbox film, for practice. Never rendered." },
     "phase": { "$ref": "#/$defs/phase" },
     "role": { "$ref": "#/$defs/role" },
     "mode": {

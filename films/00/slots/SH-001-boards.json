@@ -1,0 +1,16 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "SH-001-boards",
+  "film": 0,
+  "phase": "story",
+  "role": "storyboard",
+  "mode": "open-call",
+  "title": "Sandbox boards, SH-001",
+  "brief": "Practice slot. Board the kettle beat in 2 to 6 frames.",
+  "shot": "SH-001",
+  "outputs": [
+    { "path": "boards.json", "kind": "json" },
+    { "path": "frames/*.png", "kind": "png" }
+  ],
+  "limits": { "frames": { "min": 2, "max": 6 }, "aspect": "16:9", "min_width_px": 1280, "max_file_mb": 8 }
+}

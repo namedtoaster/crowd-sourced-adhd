@@ -7,8 +7,11 @@ import json
 import sys
 from pathlib import Path
 
+import os
+
 from . import __version__
 from .bundle import MANIFEST, build_manifest
+from .ci import run_ci, summary_markdown
 from .runner import check_bundle
 from .spec import SlotError, load_slot, validate
 
@@ -35,6 +38,19 @@ def cmd_check(args: argparse.Namespace) -> int:
         sys.stdout.buffer.write(result.to_json() + b"\n")
     else:
         _print_human(result.to_dict())
+    return EXIT[result.verdict]
+
+
+def cmd_ci(args: argparse.Namespace) -> int:
+    changed = Path(args.changed).read_text(encoding="utf-8").splitlines()
+    base_url = args.blob_base_url or os.environ.get("ADHD_BLOB_BASE_URL") or None
+    result = run_ci(args.trusted, args.pr, changed, base_url)
+    _print_human(result.to_dict())
+    if args.json_out:
+        Path(args.json_out).write_bytes(result.to_json() + b"\n")
+    if args.summary:
+        with open(args.summary, "a", encoding="utf-8") as fh:
+            fh.write(summary_markdown(result))
     return EXIT[result.verdict]
 
 
@@ -69,6 +85,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--slot", type=Path, required=True, help="Slot spec JSON from the film repo.")
     p.add_argument("--json", action="store_true", help="Print the result as canonical JSON.")
     p.set_defaults(func=cmd_check)
+
+    p = sub.add_parser("ci", help="Check a submission PR. Run from the trusted checkout of main.")
+    p.add_argument("--trusted", type=Path, required=True, help="Checkout of main: slots come from here.")
+    p.add_argument("--pr", type=Path, required=True, help="Checkout of the PR head: read as data only.")
+    p.add_argument("--changed", type=Path, required=True, help="File listing the PR's changed paths, one per line.")
+    p.add_argument("--blob-base-url", help="Where to fetch files by hash. Defaults to $ADHD_BLOB_BASE_URL.")
+    p.add_argument("--json-out", type=Path, help="Also write the result JSON here.")
+    p.add_argument("--summary", help="Append a markdown report here (pass $GITHUB_STEP_SUMMARY).")
+    p.set_defaults(func=cmd_ci)
 
     p = sub.add_parser("bundle", help="Write submission.json for a folder.")
     p.add_argument("folder", type=Path)

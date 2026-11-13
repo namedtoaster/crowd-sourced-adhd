@@ -1,0 +1,30 @@
+# Tests the checker, schemas and sandbox film whenever they change.
+# Before the repo goes public: pin each action to a full commit SHA.
+
+name: Test core
+
+on:
+  push:
+    branches: [main]
+    paths: ["core/**", "spec/**", "films/00/**", ".github/workflows/test-core.yml"]
+  pull_request:
+    paths: ["core/**", "spec/**", "films/00/**", ".github/workflows/test-core.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install --quiet -e "./core[dev]"
+      - name: Test
+        run: python -m pytest core -q

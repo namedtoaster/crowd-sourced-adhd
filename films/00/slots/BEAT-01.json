@@ -1,0 +1,12 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "BEAT-01",
+  "film": 0,
+  "phase": "story",
+  "role": "story",
+  "mode": "open-call",
+  "title": "Sandbox beat",
+  "brief": "Practice slot. Write one story beat about a kettle that will not stop boiling. Present tense, what we see.",
+  "outputs": [{ "path": "beat.md", "kind": "markdown" }],
+  "limits": { "max_words": 80, "required_fields": ["location", "time_of_day"] }
+}

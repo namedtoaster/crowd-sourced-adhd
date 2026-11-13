@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://adhd-tools.invalid/spec/check-result.schema.json",
+  "$id": "https://crowd-sourced-adhd.invalid/spec/check-result.schema.json",
   "title": "Check result",
   "description": "What adhd_core returns for one bundle against one slot. Same bundle, same slot, same core version: same result, byte for byte.",
   "type": "object",

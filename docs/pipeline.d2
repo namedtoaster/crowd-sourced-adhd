@@ -1,0 +1,98 @@
+# How a piece of work gets into the film.
+# Source of truth for docs/pipeline.svg. Render with: ./docs/render.sh
+# Containers are who owns each part. Numbered edges are the order things happen in.
+
+vars: {
+  d2-config: {
+    layout-engine: dagre
+    theme-id: 0
+    dark-theme-id: 200
+    pad: 40
+  }
+}
+
+direction: down
+
+classes: {
+  # Built in this repo (crowd-sourced-adhd)
+  tools: {
+    style: {
+      stroke: "#c94a12"
+      stroke-width: 3
+      bold: true
+    }
+  }
+  # Feedback or a read, not part of the main path
+  feedback: {
+    style: {
+      stroke-dash: 4
+    }
+  }
+}
+
+machine: "Contributor's machine · open source" {
+  addon: "Blender add-on\nmodels, blocking, look" {class: tools}
+  web: "Web form\nstory, boards, title"
+  desktop: "Desktop app\nsound, other 3D apps" {class: tools}
+  core: "adhd_core\nbundle + check" {class: tools}
+}
+
+volunteers: "Volunteer's machine · open source" {
+  render: "Desktop app, Render tab\nheadless Blender, user set caps" {class: tools}
+}
+
+backend: "Private backend · IndieCrew" {
+  app: "GitHub App\nsign in, caps, opens PRs"
+  mech: "Mechanics\nvotes, notes, reputation"
+  coord: "Render coordinator\nframe jobs, 1 in 10 rendered twice"
+}
+
+repo: "Public repo · GitHub · no secrets" {
+  pr: "Entry PR\none entry folder, text only"
+  ci: "Actions CI\nadhd ci from main, preview render"
+  main: "main\nmerged scene layers"
+}
+
+r2: "Storage · Cloudflare R2" {
+  files: "Files by hash\nmeshes, textures, audio"
+  frames: "Frames + HLS\nchanged shots only"
+}
+
+viewers: "Viewers" {
+  player: "Player page\nindiecrew.co/adhd"
+}
+
+# 1. Make and check
+machine.addon -> machine.core: "1 build + check"
+machine.web -> machine.core: "1"
+machine.desktop -> machine.core: "1"
+
+# 2 to 3. Hand in
+machine.core -> r2.files: "2 upload files (presigned URL)"
+machine.core -> backend.app: "3 manifest"
+
+# 4 to 6. Recheck in public
+backend.app -> repo.pr: "4 open PR"
+repo.pr -> repo.ci: "5 run checks"
+repo.ci -> r2.files: "fetch by hash" {class: feedback}
+repo.ci -> backend.mech: "6 check result"
+
+# 7 to 8. Decide
+backend.mech -> backend.app: "7 review or vote decides"
+backend.app -> repo.main: "8 merge"
+
+# 9 to 11. Render
+repo.main -> backend.coord: "9 changed shots"
+backend.coord -> volunteers.render: "10 frame jobs"
+volunteers.render -> r2.frames: "11 frames"
+
+# 12. Watch
+r2.frames -> viewers.player: "12 stream"
+
+# Feedback loops
+machine.core <- backend.app: "status + notes" {class: feedback}
+# Drawn from the Mechanics end so the layout keeps Mechanics up beside CI.
+backend.mech -- viewers.player: "votes, notes" {
+  class: feedback
+  source-arrowhead.shape: triangle
+}

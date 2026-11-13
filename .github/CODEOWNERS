@@ -1,0 +1,6 @@
+# Everything except entries needs the owner's review.
+# Entries (films/*/entries/) have no owner on purpose: the GitHub App merges
+# them after the checks pass and a review or vote decides.
+
+*                   @namedtoaster
+/films/*/entries/

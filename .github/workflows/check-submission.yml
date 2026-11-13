@@ -1,0 +1,74 @@
+# Checks a submission PR (anything touching films/).
+#
+# Security model:
+# - pull_request, never pull_request_target. Fork PRs get a read only token
+#   and no secrets, and this repo holds no secrets anyway.
+# - The checker and slot specs come from the PR's base (main). The PR head is
+#   checked out separately and only read as data, never executed.
+# - adhd ci fails any PR that touches files outside one entry folder, so a
+#   submission cannot also edit tools, slots or this workflow. A PR can still
+#   edit this file to fake a pass, which is why the GitHub App re-checks scope
+#   itself and never merges a PR that touches anything outside one entry.
+#
+# Before the repo goes public: pin each action to a full commit SHA.
+
+name: Check submission
+
+on:
+  pull_request:
+    paths:
+      - "films/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-submission-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out main (trusted checker and slots)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: trusted
+          persist-credentials: false
+
+      - name: Check out the PR (data only)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install the checker from main
+        run: pip install --quiet ./trusted/core
+
+      - name: List the PR's changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git -C pr diff --name-only --no-renames "$BASE_SHA...HEAD" > changed.txt
+
+      - name: Check the entry
+        env:
+          ADHD_BLOB_BASE_URL: ${{ vars.ADHD_BLOB_BASE_URL }}
+        run: >
+          adhd ci --trusted trusted --pr pr --changed changed.txt
+          --json-out result.json --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: check-result
+          path: result.json
+          if-no-files-found: ignore

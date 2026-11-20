@@ -1,25 +1,25 @@
 {
-  "schema": "adhd/submission@0",
-  "slot": "BEAT-01",
-  "film": 0,
-  "contributor": {
-    "crew_no": 1000001,
-    "display_name": "example_writer"
+  "dco": {
+    "version": "1.1",
+    "signed_off_by": "namedtoaster"
   },
-  "revision": 1,
+  "film": 0,
+  "slot": "BEAT-01",
   "files": [
     {
       "path": "beat.md",
-      "sha256": "eed1df5ab94fe8cb46397e4b42e2354c735298c935d684ac1209982e503d7319",
-      "bytes": 135
+      "bytes": 76,
+      "sha256": "71770c1462da65a2f3a4153d232a133d4452bc20a546681d8e9a700128429ed5"
     }
   ],
   "tools": {
-    "client": "adhd-cli 0.1.0",
-    "core": "0.1.0"
+    "core": "0.1.0",
+    "client": "adhd-web 0.1.0"
   },
-  "dco": {
-    "version": "1.1",
-    "signed_off_by": "example_writer"
+  "schema": "adhd/submission@0",
+  "revision": 1,
+  "contributor": {
+    "crew_no": 1000001,
+    "display_name": "namedtoaster"
   }
 }

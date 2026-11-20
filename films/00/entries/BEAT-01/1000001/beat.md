@@ -1,5 +1,5 @@
 ---
-location: kitchen
-time_of_day: late afternoon
+location: Seattle
+time_of_day: Morning
 ---
-The kettle starts to rattle. Steam fogs the window. Nobody moves to turn it off.
+The kettle starts screaming.

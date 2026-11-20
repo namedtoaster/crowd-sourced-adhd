@@ -8,7 +8,7 @@ films/NN/
   spine/      the frozen creative rules: logline, style guide, palette, camera rules
   slots/      one JSON file per slot (format: spec/slot.schema.json)
   entries/    submissions, one folder per slot per contributor:
-              entries/<SLOT-ID>/<github id>/submission.json + text files
+              entries/<SLOT-ID>/<crew no>/submission.json + text files
   scene/      merged USD layers that make up the film
 ```
 

@@ -12,11 +12,12 @@
     "film": { "type": "integer", "minimum": 0, "description": "0 is the sandbox film, for practice. Never rendered." },
     "contributor": {
       "type": "object",
-      "required": ["github_id", "github_login"],
+      "description": "Who made it. No login names or emails: contributors sign in with any account, and this file is public.",
+      "required": ["crew_no", "name"],
       "additionalProperties": false,
       "properties": {
-        "github_id": { "type": "integer", "description": "Numeric id. Logins can be renamed, ids cannot." },
-        "github_login": { "type": "string" }
+        "crew_no": { "type": "integer", "minimum": 1, "description": "Public crew number the backend gives each person. Names the entry folder. Never changes." },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80, "description": "The name they want in the credits." }
       }
     },
     "revision": {
@@ -64,8 +65,10 @@
         "version": { "const": "1.1" },
         "signed_off_by": {
           "type": "string",
-          "description": "Name <email>. A GitHub noreply address is fine.",
-          "pattern": "^.+ <[^<>@\\s]+@[^<>@\\s]+>$"
+          "description": "The name the contributor signed the DCO with. No email: the backend keeps who signed, privately, and this file is public.",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[^<>@]+$"
         }
       }
     }

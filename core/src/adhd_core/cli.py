@@ -62,7 +62,7 @@ def cmd_bundle(args: argparse.Namespace) -> int:
         return EXIT_USAGE
     manifest = build_manifest(
         root, slot,
-        github_id=args.github_id, github_login=args.github_login, signed_off_by=args.sign_off,
+        crew_no=args.crew_no, name=args.name, signed_off_by=args.sign_off or args.name,
         client=f"adhd-cli {__version__}", core=__version__,
         revision=args.revision, message=args.message,
     )
@@ -98,9 +98,9 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("bundle", help="Write submission.json for a folder.")
     p.add_argument("folder", type=Path)
     p.add_argument("--slot", type=Path, required=True)
-    p.add_argument("--github-id", type=int, required=True)
-    p.add_argument("--github-login", required=True)
-    p.add_argument("--sign-off", required=True, help='DCO sign off, "Your Name <you@example.com>".')
+    p.add_argument("--crew-no", type=int, required=True, help="Your public crew number.")
+    p.add_argument("--name", required=True, help="Your name as it should appear in the credits.")
+    p.add_argument("--sign-off", help="Name you sign the DCO with, if different. No email.")
     p.add_argument("--revision", type=int, default=1)
     p.add_argument("--message")
     p.set_defaults(func=cmd_bundle)

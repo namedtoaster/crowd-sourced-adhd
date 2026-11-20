@@ -29,15 +29,15 @@ def repos(tmp_path: Path):
     return trusted, pr
 
 
-def add_entry(pr: Path, entry: str, slot: dict, files: dict, github_id: int = 1000001) -> list[str]:
+def add_entry(pr: Path, entry: str, slot: dict, files: dict, crew_no: int = 1000001) -> list[str]:
     """Writes files into the PR checkout, bundles them, returns the changed paths."""
     root = pr / entry
     root.mkdir(parents=True)
     for rel, content in files.items():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_bytes(content.encode() if isinstance(content, str) else content)
-    doc = build_manifest(root, slot, github_id=github_id, github_login="example_writer",
-                         signed_off_by="Example Writer <w@example.com>", client="tests", core="0.1.0")
+    doc = build_manifest(root, slot, crew_no=crew_no, name="Example Writer",
+                         signed_off_by="Example Writer", client="tests", core="0.1.0")
     (root / MANIFEST).write_text(json.dumps(doc))
     return sorted(f"{entry}/{p.relative_to(root).as_posix()}" for p in root.rglob("*") if p.is_file())
 
@@ -82,7 +82,7 @@ def test_slot_comes_from_main_not_the_pr(repos) -> None:
 def test_two_entries_fail(repos) -> None:
     trusted, pr = repos
     changed = add_entry(pr, ENTRY, STORY, {"beat.md": GOOD_BEAT})
-    changed += add_entry(pr, "films/00/entries/BEAT-01/1000002", STORY, {"beat.md": GOOD_BEAT}, github_id=1000002)
+    changed += add_entry(pr, "films/00/entries/BEAT-01/1000002", STORY, {"beat.md": GOOD_BEAT}, crew_no=1000002)
     result = run_ci(trusted, pr, changed)
     assert "more than one entry" in result.checks[0].message
 
@@ -96,7 +96,7 @@ def test_unknown_slot(repos) -> None:
 
 def test_folder_must_match_contributor(repos) -> None:
     trusted, pr = repos
-    changed = add_entry(pr, "films/00/entries/BEAT-01/1000002", STORY, {"beat.md": GOOD_BEAT}, github_id=1000001)
+    changed = add_entry(pr, "films/00/entries/BEAT-01/1000002", STORY, {"beat.md": GOOD_BEAT}, crew_no=1000001)
     assert by_id(run_ci(trusted, pr, changed))["pr.contributor"] == "fail"
 
 

@@ -3,8 +3,8 @@
   "slot": "BEAT-01",
   "film": 0,
   "contributor": {
-    "github_id": 1000001,
-    "github_login": "example_writer"
+    "crew_no": 1000001,
+    "name": "Example Writer"
   },
   "revision": 1,
   "files": [
@@ -20,6 +20,6 @@
   },
   "dco": {
     "version": "1.1",
-    "signed_off_by": "Example Writer <1000001+example_writer@users.noreply.github.com>"
+    "signed_off_by": "Example Writer"
   }
 }

@@ -9,8 +9,7 @@ Pure Python 3.11, one pure Python dependency, so it can ship inside Blender.
 ## Use it
 
 ```
-adhd bundle ./my-beat --slot BEAT-04.json --github-id 1000001 \
-  --github-login your_login --sign-off "Your Name <you@example.com>"
+adhd bundle ./my-beat --slot BEAT-04.json --crew-no 1000001 --name "Your Name"
 adhd check ./my-beat --slot BEAT-04.json
 ```
 

@@ -6,7 +6,7 @@ from main. That way a PR cannot loosen the rules it is judged by.
 
 A submission PR may only add files inside one entry folder:
 
-    films/<NN>/entries/<SLOT-ID>/<github id>/
+    films/<NN>/entries/<SLOT-ID>/<crew no>/
 
 Text files travel in the PR. Everything else is fetched from storage by
 hash before checking, so binaries never enter Git.
@@ -30,7 +30,7 @@ ENTRY_PATH = re.compile(r"^films/(\d{2})/entries/([A-Z]+(?:-[A-Za-z0-9]+)+)/([1-
 TEXT_EXTENSIONS = {".md", ".json", ".usda"}
 MAX_TEXT_BYTES = 256 * 1024
 FETCH_TIMEOUT_S = 60
-FORMAT_HINT = "films/NN/entries/SLOT-ID/GITHUB_ID/"
+FORMAT_HINT = "films/NN/entries/SLOT-ID/CREW_NO/"
 
 
 @dataclass(frozen=True)
@@ -38,11 +38,11 @@ class Entry:
     film: int
     film_dir: str
     slot_id: str
-    contributor_id: int
+    crew_no: int
 
     @property
     def path(self) -> str:
-        return f"{self.film_dir}/entries/{self.slot_id}/{self.contributor_id}"
+        return f"{self.film_dir}/entries/{self.slot_id}/{self.crew_no}"
 
 
 def resolve_entry(changed: list[str]) -> tuple[Entry | None, Check]:
@@ -66,8 +66,8 @@ def resolve_entry(changed: list[str]) -> tuple[Entry | None, Check]:
         listing = ", ".join(f"films/{f}/entries/{s}/{i}" for f, s, i in sorted(entries))
         return None, Check("pr.scope", "fail", f"The PR adds more than one entry: {listing}.",
                            fix="Send one entry per PR.")
-    film_dir, slot_id, contributor_id = entries.pop()
-    entry = Entry(int(film_dir), f"films/{film_dir}", slot_id, contributor_id)
+    film_dir, slot_id, crew_no = entries.pop()
+    entry = Entry(int(film_dir), f"films/{film_dir}", slot_id, crew_no)
     return entry, Check("pr.scope", "pass", f"The PR adds one entry, {entry.path}.", where=entry.path)
 
 
@@ -157,10 +157,10 @@ def run_ci(trusted_root: Path, pr_root: Path, changed: list[str], blob_base_url:
 
     manifest = load_bundle(bundle_dir).manifest
     contributor = (manifest or {}).get("contributor", {}) if isinstance(manifest, dict) else {}
-    if isinstance(contributor, dict) and contributor.get("github_id") not in (None, entry.contributor_id):
+    if isinstance(contributor, dict) and contributor.get("crew_no") not in (None, entry.crew_no):
         pre.append(Check("pr.contributor", "fail",
-                         f"The entry folder is for GitHub id {entry.contributor_id} but submission.json says {contributor.get('github_id')}.",
-                         fix="Resubmit from your client, which names the folder after your GitHub id."))
+                         f"The entry folder is for crew number {entry.crew_no} but submission.json says {contributor.get('crew_no')}.",
+                         fix="Resubmit from your client, which names the folder after your crew number."))
 
     if not any(c.status == "fail" for c in pre):
         pre.append(fetch_missing(bundle_dir, blob_base_url))

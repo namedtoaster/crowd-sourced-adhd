@@ -511,13 +511,27 @@ def import_(src: Path, out: Path) -> None:
     print("IMPORT " + json.dumps(res))
 
 
-def render_native(out: Path) -> None:
-    """Render the three materials as made in this Blender, for a same look check."""
+def render_native(out: Path, engine: str = "EEVEE", width: int = RES[0]) -> None:
+    """Render the three materials as made in this Blender.
+
+    Used for the same look check in spike E, and by spike F to time renders
+    on CI runners: engine is EEVEE, WORKBENCH or CYCLES.
+    """
+    import time  # noqa: PLC0415
+
     out.mkdir(parents=True, exist_ok=True)
     spheres = render_scene()
     for ob, build in zip(spheres, BUILDERS):
         ob.data.materials.append(build())
-    render(out / "native.png")
+    scene = bpy.context.scene
+    scene.render.engine = {"EEVEE": eevee_id(), "WORKBENCH": "BLENDER_WORKBENCH", "CYCLES": "CYCLES"}[engine]
+    if engine == "CYCLES":
+        scene.cycles.device = "CPU"
+        scene.cycles.samples = 16
+    scene.render.resolution_x, scene.render.resolution_y = width, width * 9 // 16
+    t = time.perf_counter()
+    render(out / f"{engine.lower()}.png")
+    print(f"RENDER {engine} {width}px {time.perf_counter() - t:.2f}s")
 
 
 if MODE == "export":
@@ -525,6 +539,6 @@ if MODE == "export":
 elif MODE == "import":
     import_(Path(ARGS[1]).resolve(), Path(ARGS[2]).resolve())
 elif MODE == "render":
-    render_native(Path(ARGS[1]).resolve())
+    render_native(Path(ARGS[1]).resolve(), *(ARGS[2:3]), *(int(x) for x in ARGS[3:4]))
 else:
     raise SystemExit(f"unknown mode {MODE!r}")

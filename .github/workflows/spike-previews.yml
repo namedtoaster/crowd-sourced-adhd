@@ -1,0 +1,70 @@
+# Spike F: can a free, GPU-less runner make Eevee previews, and how fast?
+# Run by hand from the Actions tab. Tries Eevee three ways (headless
+# software OpenGL, OpenGL under a virtual display, Vulkan on lavapipe),
+# then Workbench and Cycles CPU for comparison. Timings land in the run
+# summary and the renders are uploaded as an artifact.
+
+name: Spike F previews
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  BLENDER: blender-5.2.4-linux-x64
+  BLENDER_SHA256: 2fd14c50987426897ba60237ee996edf2b4151f4b1a72a460ca20be58c1d2d86
+  SPIKE: spikes/versions/spike_versions.py
+
+jobs:
+  previews:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Install system libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libgl1-mesa-dri libglx-mesa0 \
+            mesa-vulkan-drivers libvulkan1 libxkbcommon0 libxi6 libxrender1 libsm6 \
+            libxxf86vm1 libxfixes3 libx11-6 xvfb > /dev/null
+
+      - name: Download Blender
+        run: |
+          curl -sfL -o b.tar.xz "https://download.blender.org/release/Blender5.2/$BLENDER.tar.xz"
+          echo "$BLENDER_SHA256  b.tar.xz" | sha256sum -c -
+          tar -xf b.tar.xz
+          echo "B=$PWD/$BLENDER/blender" >> "$GITHUB_ENV"
+
+      - name: Render
+        run: |
+          mkdir -p out
+          try() {
+            name=$1; shift
+            start=$(date +%s.%N)
+            if timeout 600 "$@" > "out/$name.log" 2>&1 && grep -q '^RENDER' "out/$name.log"; then
+              line=$(grep '^RENDER' "out/$name.log")
+              echo "| $name | ok | $line | $(echo "$(date +%s.%N) - $start" | bc | cut -c1-6)s |" >> table.md
+            else
+              echo "| $name | failed | $(grep -m1 -iE 'error|fail|unable|cannot' "out/$name.log" | cut -c1-120) | $(echo "$(date +%s.%N) - $start" | bc | cut -c1-6)s |" >> table.md
+            fi
+          }
+          echo "| Try | Result | Render line (render only) | Wall clock incl. Blender start |" > table.md
+          echo "|---|---|---|---|" >> table.md
+          try eevee_headless env LIBGL_ALWAYS_SOFTWARE=1 "$B" -b --factory-startup -P "$SPIKE" -- render out/eevee_headless EEVEE 1280
+          try eevee_xvfb xvfb-run -a -s "-screen 0 1920x1080x24" env LIBGL_ALWAYS_SOFTWARE=1 "$B" -b --factory-startup -P "$SPIKE" -- render out/eevee_xvfb EEVEE 1280
+          try eevee_vulkan "$B" -b --factory-startup --gpu-backend vulkan -P "$SPIKE" -- render out/eevee_vulkan EEVEE 1280
+          try workbench "$B" -b --factory-startup -P "$SPIKE" -- render out/workbench WORKBENCH 1280
+          try cycles_cpu "$B" -b --factory-startup -P "$SPIKE" -- render out/cycles_cpu CYCLES 1280
+          { echo "## Spike F on $(nproc) cores, $(free -g | awk '/Mem/{print $2}') GB"; cat table.md; } >> "$GITHUB_STEP_SUMMARY"
+          cat table.md
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: spike-f-renders
+          path: out/

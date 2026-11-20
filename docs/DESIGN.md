@@ -174,8 +174,8 @@ public bundle format defined in `spec/`.
 
 ## Hard problems to settle first
 
-Each of these is a short spike before any real building. A, B, D and E
-are settled; full results and renders are in [spikes/README.md](../spikes/README.md).
+Each of these is a short spike before any real building. A, B, D, E and
+F are settled; full results and renders are in [spikes/README.md](../spikes/README.md).
 
 **A. Materials: settled, recipes.** Through USD, every node graph collapses
 to a bare Principled BSDF, with or without MaterialX (Blender writes
@@ -231,11 +231,15 @@ identical on 5.2. The node allowlist holds only nodes that behave the same
 across the supported range (5.0 removed Point Density and some Sky Texture
 inputs, for example).
 
-**F. Eevee previews on free runners: to test.** Free GitHub Actions
-runners have no GPU, and Eevee normally needs one. Try the pinned Blender
-headless on a standard runner with software OpenGL. If Eevee runs in
-reasonable time, previews use Eevee so they match the film. If not,
-previews use Workbench, which is fine for an image reviewers look at.
+**F. Eevee previews on free runners: settled, Eevee works.** A free
+GitHub runner has no GPU, but the pinned Blender renders Eevee on it with
+Mesa's software drivers (20 Nov 2026, results in
+[spikes/README.md](../spikes/README.md)). Under a virtual display
+(`xvfb-run`) a 1280 px frame of the spike A scene takes about 9 s, and
+matches a GPU render within 0.04 on a 0 to 255 scale. So previews use
+Eevee and look like the film. Plain headless (21 s) and Vulkan on
+lavapipe (17 s) also work; Workbench takes 1 s if a quick look is ever
+enough.
 
 ## Scene loading (to design later)
 
@@ -276,7 +280,8 @@ Follows the film's phases, so each tool exists just before it is needed.
    the bundle checks, story and storyboard checks and the `adhd` CLI, with
    tests. Submission CI (`adhd ci` plus the workflow), the sandbox film
    and the one repo layout followed the same day, then spikes A and B.
-   Still to do: sound checks, spikes C and F, a first run on real GitHub.
+   Still to do: sound checks, spike C, a first run of submission CI on real
+   GitHub.
 1. **Spine and Story (phases 1 and 2).** Text and image submissions through
    the web form. No install for anyone.
 2. **Greybox (phase 3).** Blender add-on, blocking role only: sign in,
@@ -310,6 +315,8 @@ Follows the film's phases, so each tool exists just before it is needed.
   same file always gets the same verdict. The preview render is for
   reviewers only. Real render times from volunteer machines are used later
   to tune the count limits.
+- 2026-11-20: Previews render in Eevee on free GitHub runners under a
+  virtual display, about 9 s per 1280 px frame (spike F).
 - 2026-11-20: Submission status and notes are pushed live to clients, not
   polled.
 

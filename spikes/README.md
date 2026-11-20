@@ -96,6 +96,30 @@ Top: as the artist saw it in 4.2. Bottom: the same recipe rebuilt in 5.2.
 **Decision:** the add-on supports Blender 4.5 and newer. It also means one
 animation code path, since 4.5 already has slotted actions.
 
+## F. Eevee previews on a free runner: yes, about 9 s a frame
+
+A free GitHub Actions runner (`ubuntu-latest`, no GPU) rendered the spike A
+scene at 1280 x 720 with the pinned Blender 5.2.4, five ways. Workflow:
+[.github/workflows/spike-previews.yml](../.github/workflows/spike-previews.yml),
+run 20 Nov 2026.
+
+| Try | Render | Incl. Blender start |
+|---|---|---|
+| Eevee, OpenGL under a virtual display (`xvfb-run`) | **8.9 s** | 10.1 s |
+| Eevee, Vulkan on lavapipe | 16.8 s | 17.6 s |
+| Eevee, headless software OpenGL | 20.7 s | 23.0 s |
+| Cycles CPU, 16 samples | 12.6 s | 13.3 s |
+| Workbench | 1.1 s | 1.8 s |
+
+All three Eevee renders are identical to each other and within 0.04 (0 to
+255) of an Eevee render on a Mac GPU, so software rendering changes the
+speed, not the look.
+
+![Eevee on a free runner](previews/eevee-on-free-runner.png)
+
+**Decision:** previews render in Eevee under `xvfb-run` on free runners. A
+turntable plus an in shot frame is a few frames, well under a minute.
+
 ## Follow ups
 
 - Export animation without the mesh. The test file is 900 KB because it

@@ -1,7 +1,7 @@
 # Contributor tools: design (draft)
 
 Status: checker and submission CI built, everything else designed only.
-Last updated 13 Nov 2026.
+Last updated 20 Nov 2026.
 
 This repo will be public. It holds all the public parts in one place: the
 tools that run on contributors' machines, the CI that checks submissions,
@@ -30,7 +30,10 @@ role definition plus its checks, not a new program.
 
 The verdict is a pure function of three things: the bundle, the slot spec
 (from `main`), and the `adhd_core` version (from `main`). No network, no
-clock, no randomness.
+clock, no randomness. That is why render cost is judged by counting what
+makes a frame slow (lights, shadow casting lights, triangles, texture
+memory), never by timing a render: a stopwatch gives a different number
+every run.
 
 ## What each kind of work needs
 
@@ -42,7 +45,7 @@ clock, no randomness.
 | Model | Blender (or other DCC) | USD or glTF | tris, scale, fits greybox bounds, texture size, texel density | add-on, or drop zone for other DCCs |
 | Material | Blender | material recipe JSON (see spike A) | allowed nodes only, values in range, palette ΔE | add-on only |
 | Animation | Blender | USD animation on a library rig (see spike B) | length, rig is from library, no sims | add-on only |
-| Lighting | Blender | USD lights or recipe JSON | light budget, render time | add-on only |
+| Lighting | Blender | USD lights or recipe JSON | light count, shadow casting lights | add-on only |
 | Sound | any DAW | WAV | loudness, sample rate, duration, no voice tag | drop zone |
 | Render time | n/a | frames, not a bundle | frame verification (server side) | desktop app, render mode |
 
@@ -94,7 +97,8 @@ safe because of four rules:
   - **Plain checks** run anywhere with no Blender: word counts, image sizes,
     audio loudness, JSON shape, USD stats via `usd-core`.
   - **Blender checks** need `bpy` and run in a pinned headless Blender:
-    bounds against the greybox, node allowlist, preview render time.
+    bounds against the greybox, node allowlist. The preview render is
+    made for reviewers to look at; it never passes or fails anything.
 - Every failed check returns a plain English fix, not just a code.
   "Your prop is 31,402 triangles. The slot allows 20,000. Try a Decimate
   modifier at 0.6."
@@ -107,8 +111,9 @@ safe because of four rules:
   own extension repository URL. Blender then installs and updates it from
   inside Preferences, no zip juggling after the first time.
 - Sidebar panel, in this order:
-  1. **Sign in** with GitHub (device code flow: shows a code, opens the
-     browser).
+  1. **Sign in** with a code shown in Blender and approved in the browser,
+     using Reddit, Discord, GitHub, Google or an email link. No GitHub
+     account needed: most artists do not have one.
   2. **Slots**: open and claimable slots for the current phase, filtered to
      the roles you can do. Claim or enter an open call from here.
   3. **Open context**: pulls in what the slot needs to sit next to, read
@@ -140,16 +145,16 @@ safe because of four rules:
 
 ### Text and image submissions
 
-Recommendation: a submit form on the player page (GitHub sign in, no
-IndieCrew account) for story beats, title entries and storyboards. It posts
+Recommendation: a submit form on the player page (any of the sign in
+options, no IndieCrew account) for story beats, title entries and storyboards. It posts
 the same bundle format to the same backend, and CI runs the same checks.
 The form lives in the IndieCrew repo, not here, but it only speaks the
 public bundle format defined in `spec/`.
 
 ## How a submission travels
 
-1. Client signs in with GitHub device flow and swaps that for a backend
-   session.
+1. Client signs in through the backend (a code approved in the browser,
+   with any supported login) and gets a backend session.
 2. Client builds the bundle and runs checks locally.
 3. Binary files upload to R2 by content hash, through presigned URLs from
    the backend. Files already there are skipped, so resubmits are fast.
@@ -161,12 +166,15 @@ public bundle format defined in `spec/`.
    scope, slot, contributor folder, then fetches binaries from
    `$ADHD_BLOB_BASE_URL/<sha256>` and runs the checks. Same verdict as the
    local run, or something is broken.
-6. Status and notes flow back to every client through the backend (polling
-   is fine to start).
+6. Status and notes are pushed live to every client the moment they
+   change (checks done, notes added, merged). No polling and no refresh
+   button. The backend sends each change on a private channel per
+   contributor, and clients get a short lived token for their own channel
+   only.
 
 ## Hard problems to settle first
 
-Each of these is a short spike before any real building. A and B are
+Each of these is a short spike before any real building. A, B and D are
 settled; full results and renders are in [spikes/README.md](../spikes/README.md).
 
 **A. Materials: settled, recipes.** Through USD, every node graph collapses
@@ -185,15 +193,44 @@ library rig. Still to do: export the animation without the mesh.
 repo, Actions on those PRs can read repository secrets, unlike fork PRs. So
 either the public repo holds **no secrets at all** (simplest, and already
 the plan) or the App pushes to a bot owned fork. Credit is recorded by the
-backend and shown with a `Co-authored-by` trailer; the DCO sign-off is the
+backend, and shown with a `Co-authored-by` trailer when the contributor
+has a GitHub account; the DCO sign-off is the
 contributor's, accepted in the client before upload.
 
 **D. Pinned Blender.** Checks and renders must use one exact Blender
 version, or verdicts and frames will drift. CI, the desktop app and the
 render client pin the same version. The add-on supports a range but sends
-its exports to the pinned version for the full check. Recommendation:
-pin Blender 5.2 LTS. It is supported for two years, and Eevee renders on
-it were bit for bit repeatable in spike A.
+its exports to the pinned version for the full check. **Settled: pin
+Blender 5.2 LTS** (supported to July 2028; Eevee renders on it were bit for
+bit repeatable in spike A). The add-on supports 4.2 and newer, see E.
+
+**E. Older Blender versions: to test.** Spikes A and B only exported from
+5.2 into 5.2. Export a prop, a material recipe and an animation from
+4.2 and from 4.5, then check and render them on the pinned 5.2. If they
+come through intact, the 4.2 floor holds; if not, raise it. Also confirm
+the `pxr` USD bindings are importable inside 4.2, since scene loading
+depends on them.
+
+**F. Eevee previews on free runners: to test.** Free GitHub Actions
+runners have no GPU, and Eevee normally needs one. Try the pinned Blender
+headless on a standard runner with software OpenGL. If Eevee runs in
+reasonable time, previews use Eevee so they match the film. If not,
+previews use Workbench, which is fine for an image reviewers look at.
+
+What the add-on has to bridge across 4.2 and newer, all small shims chosen
+by feature detection, not version numbers:
+
+- Animation storage: 4.2 and 4.3 have only the legacy action API, 4.4 and
+  4.5 have both, 5.0 and newer have only slotted actions.
+- The Eevee engine id is `BLENDER_EEVEE_NEXT` before 5.0 and
+  `BLENDER_EEVEE` from 5.0.
+- Some USD export options were renamed or removed in 5.0.
+- Python 3.11 up to 5.0, 3.13 from 5.1. `adhd_core` already needs only
+  3.11 and is pure Python.
+
+Material recipes record the Blender version that made them, and the node
+allowlist holds only nodes that are the same across the supported range
+(5.0 removed Point Density and some Sky Texture inputs, for example).
 
 ## Scene loading (to design later)
 
@@ -234,7 +271,7 @@ Follows the film's phases, so each tool exists just before it is needed.
    the bundle checks, story and storyboard checks and the `adhd` CLI, with
    tests. Submission CI (`adhd ci` plus the workflow), the sandbox film
    and the one repo layout followed the same day, then spikes A and B.
-   Still to do: sound checks, spikes C and D, a first run on real GitHub.
+   Still to do: sound checks, spikes C, E and F, a first run on real GitHub.
 1. **Spine and Story (phases 1 and 2).** Text and image submissions through
    the web form. No install for anyone.
 2. **Greybox (phase 3).** Blender add-on, blocking role only: sign in,
@@ -256,9 +293,20 @@ Follows the film's phases, so each tool exists just before it is needed.
   Apache 2.0 (patent grant, and compatible with GPL 3).
 - 2026-11-13: Materials travel as JSON node recipes, animation as USD
   skeletal animation on library rigs (spikes A and B).
+- 2026-11-20: The add-on supports Blender 4.2 and newer, with no upper
+  limit until a release breaks something. CI tests the last release of each
+  LTS line plus the newest release. Checks and renders pin Blender 5.2 LTS.
+  The 4.2 floor holds only if spike E passes. 4.2 is the oldest version
+  that installs extensions from a repository, and students and indie crews
+  often stay on an old LTS for years.
+- 2026-11-20: Render cost is checked by counts (lights, shadow casting
+  lights, triangles, texture memory), never by timing a render, so the
+  same file always gets the same verdict. The preview render is for
+  reviewers only. Real render times from volunteer machines are used later
+  to tune the count limits.
+- 2026-11-20: Submission status and notes are pushed live to clients, not
+  polled.
 
 ## Open decisions
 
-- Oldest Blender version the add-on supports (4.2 LTS is the floor for the
-  extension format), and which version to pin for checks and renders
-  (5.2 LTS recommended).
+None right now. Project wide open decisions are in the private handover.

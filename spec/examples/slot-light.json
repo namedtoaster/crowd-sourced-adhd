@@ -11,5 +11,5 @@
   "depends_on": ["SH-012-anim"],
   "context": ["shots/SH-012/blocking.usda", "shots/SH-012/anim.usda", "sets/kitchen/set.usda"],
   "outputs": [{ "path": "lights.usda", "kind": "usd-layer" }],
-  "limits": { "max_lights": 6, "max_render_ms": 4000 }
+  "limits": { "max_lights": 6, "max_shadow_lights": 2 }
 }

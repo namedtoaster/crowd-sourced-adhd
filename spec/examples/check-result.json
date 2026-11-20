@@ -6,8 +6,8 @@
   "verdict": "fail",
   "checks": [
     { "id": "lighting.count", "status": "pass", "measured": 5, "limit": 6, "message": "5 lights. The slot allows 6." },
-    { "id": "lighting.render_time", "status": "fail", "measured": 5210, "limit": 4000, "where": "frame 1040",
-      "message": "Frame 1040 took 5.2 s in the preview render. The slot allows 4.0 s.",
-      "fix": "The area light on the window has soft shadows at radius 1.5 m. Try 0.5 m, or turn off shadows on the hall fill." }
+    { "id": "lighting.shadow_lights", "status": "fail", "measured": 3, "limit": 2, "where": "HallFill",
+      "message": "3 lights cast shadows. The slot allows 2.",
+      "fix": "Turn off shadows on the hall fill. It is soft enough that nobody will miss them." }
   ]
 }

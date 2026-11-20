@@ -154,11 +154,11 @@
       },
       "lighting": {
         "type": "object",
-        "required": ["max_lights", "max_render_ms"],
+        "required": ["max_lights", "max_shadow_lights"],
         "additionalProperties": false,
         "properties": {
           "max_lights": { "type": "integer", "minimum": 1 },
-          "max_render_ms": { "type": "integer", "description": "Per frame, measured in the reference preview render." }
+          "max_shadow_lights": { "type": "integer", "minimum": 0, "description": "Lights that cast shadows. Render cost is judged by counts like this, never by timing a render, so the verdict cannot change between runs." }
         }
       },
       "sound": {

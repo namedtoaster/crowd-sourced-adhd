@@ -39,7 +39,7 @@ LIGHT_SLOT: dict[str, Any] = {
     "schema": "adhd/slot@0", "id": "SH-012-light", "film": 1, "phase": "assets-look", "role": "lighting",
     "mode": "claim", "title": "Lighting, SH-012", "brief": "Late afternoon.", "shot": "SH-012",
     "outputs": [{"path": "lights.usda", "kind": "usd-layer"}],
-    "limits": {"max_lights": 6, "max_render_ms": 4000},
+    "limits": {"max_lights": 6, "max_shadow_lights": 2},
 }
 
 GOOD_BEAT = """---

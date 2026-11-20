@@ -1,0 +1,25 @@
+{
+  "schema": "adhd/submission@0",
+  "slot": "BEAT-01",
+  "film": 0,
+  "contributor": {
+    "github_id": 1000003,
+    "github_login": "test_rambler"
+  },
+  "revision": 1,
+  "files": [
+    {
+      "path": "beat.md",
+      "sha256": "b733001595a3e381c1bdc77ac33153043b5708c5f648602c13d70b23cd48e981",
+      "bytes": 714
+    }
+  ],
+  "tools": {
+    "client": "hand made test",
+    "core": "0.1.0"
+  },
+  "dco": {
+    "version": "1.1",
+    "signed_off_by": "Test Rambler <1000003+test_rambler@users.noreply.github.com>"
+  }
+}

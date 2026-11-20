@@ -11,3 +11,4 @@ Slots:
 
 `entries/BEAT-01/1000001/` is an example entry that passes. CI tests keep
 it passing.
+sneaky

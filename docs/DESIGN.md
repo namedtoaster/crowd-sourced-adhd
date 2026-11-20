@@ -174,8 +174,8 @@ public bundle format defined in `spec/`.
 
 ## Hard problems to settle first
 
-Each of these is a short spike before any real building. A, B, D, E and
-F are settled; full results and renders are in [spikes/README.md](../spikes/README.md).
+Each of these is a short spike before any real building. All six are
+settled; full results and renders are in [spikes/README.md](../spikes/README.md).
 
 **A. Materials: settled, recipes.** Through USD, every node graph collapses
 to a bare Principled BSDF, with or without MaterialX (Blender writes
@@ -189,7 +189,7 @@ the animation alone applied to a fresh copy of the rig. The receiving rig
 must use quaternion rotation, and bone names and rest pose must match the
 library rig. Still to do: export the animation without the mesh.
 
-**C. Who authors the PR.** If the App pushes branches into the public
+**C. Who authors the PR: settled, the App, and the repo holds no secrets.** If the App pushes branches into the public
 repo, Actions on those PRs can read repository secrets, unlike fork PRs. So
 either the public repo holds **no secrets at all** (simplest, and already
 the plan) or the App pushes to a bot owned fork. Credit is recorded by the

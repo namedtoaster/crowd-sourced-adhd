@@ -36,8 +36,8 @@ def add_entry(pr: Path, entry: str, slot: dict, files: dict, crew_no: int = 1000
     for rel, content in files.items():
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_bytes(content.encode() if isinstance(content, str) else content)
-    doc = build_manifest(root, slot, crew_no=crew_no, name="Example Writer",
-                         signed_off_by="Example Writer", client="tests", core="0.1.0")
+    doc = build_manifest(root, slot, crew_no=crew_no, display_name="example_writer",
+                         signed_off_by="example_writer", client="tests", core="0.1.0")
     (root / MANIFEST).write_text(json.dumps(doc))
     return sorted(f"{entry}/{p.relative_to(root).as_posix()}" for p in root.rglob("*") if p.is_file())
 

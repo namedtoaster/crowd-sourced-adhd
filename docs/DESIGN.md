@@ -285,9 +285,11 @@ Follows the film's phases, so each tool exists just before it is needed.
    folder, a missing field, 128 words against 80), each with a plain
    message. Still to do: sound checks.
    Since 20 Nov 2026, entry folders and `submission.json` use a public
-   crew number from the backend instead of a GitHub id, and the DCO sign
-   off carries a name but no email, because contributors sign in with any
-   account and this repo is public.
+   crew number from the backend instead of a GitHub id, and a display
+   name each person chooses (never defaulted to their real name or login).
+   The DCO sign off is that display name with no email; the backend keeps
+   who signed, privately. Contributors sign in with any account and this
+   repo is public.
 1. **Spine and Story (phases 1 and 2).** Text and image submissions through
    the web form. No install for anyone.
 2. **Greybox (phase 3).** Blender add-on, blocking role only: sign in,

@@ -4,7 +4,7 @@
   "film": 1,
   "contributor": {
     "crew_no": 1000001,
-    "name": "Example Gaffer"
+    "display_name": "example_gaffer"
   },
   "revision": 2,
   "message": "Pulled the fill down a stop after notes.",
@@ -22,6 +22,6 @@
   },
   "dco": {
     "version": "1.1",
-    "signed_off_by": "Example Gaffer"
+    "signed_off_by": "example_gaffer"
   }
 }

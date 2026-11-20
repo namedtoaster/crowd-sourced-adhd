@@ -64,8 +64,8 @@ def make_bundle(tmp_path: Path) -> Callable[..., Path]:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(content.encode("utf-8") if isinstance(content, str) else content)
         if manifest:
-            doc = build_manifest(root, slot, crew_no=1000001, name="Example Writer",
-                                 signed_off_by="Example Writer",
+            doc = build_manifest(root, slot, crew_no=1000001, display_name="example_writer",
+                                 signed_off_by="example_writer",
                                  client="tests", core="0.1.0")
             (root / MANIFEST).write_text(json.dumps(doc), encoding="utf-8")
         return root

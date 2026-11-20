@@ -94,7 +94,7 @@ def build_manifest(
     slot: dict[str, Any],
     *,
     crew_no: int,
-    name: str,
+    display_name: str,
     signed_off_by: str,
     client: str,
     core: str,
@@ -108,7 +108,7 @@ def build_manifest(
         "schema": "adhd/submission@0",
         "slot": slot["id"],
         "film": slot["film"],
-        "contributor": {"crew_no": crew_no, "name": name},
+        "contributor": {"crew_no": crew_no, "display_name": display_name},
         "revision": revision,
         "files": [
             {"path": rel, "sha256": sha256_file(Path(root) / rel), "bytes": (Path(root) / rel).stat().st_size}

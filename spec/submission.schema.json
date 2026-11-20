@@ -13,11 +13,11 @@
     "contributor": {
       "type": "object",
       "description": "Who made it. No login names or emails: contributors sign in with any account, and this file is public.",
-      "required": ["crew_no", "name"],
+      "required": ["crew_no", "display_name"],
       "additionalProperties": false,
       "properties": {
         "crew_no": { "type": "integer", "minimum": 1, "description": "Public crew number the backend gives each person. Names the entry folder. Never changes." },
-        "name": { "type": "string", "minLength": 1, "maxLength": 80, "description": "The name they want in the credits." }
+        "display_name": { "type": "string", "minLength": 1, "maxLength": 40, "description": "The public name they chose, shown in credits. Not their real name unless they pick it." }
       }
     },
     "revision": {
@@ -65,7 +65,7 @@
         "version": { "const": "1.1" },
         "signed_off_by": {
           "type": "string",
-          "description": "The name the contributor signed the DCO with. No email: the backend keeps who signed, privately, and this file is public.",
+          "description": "The contributor's display name. No email or real name needed: the backend keeps who signed, privately, and this file is public.",
           "minLength": 1,
           "maxLength": 80,
           "pattern": "^[^<>@]+$"

@@ -219,7 +219,7 @@ def test_manifest_keeps_emails_out() -> None:
     """submission.json is public, so the sign off and contributor carry no email or login."""
     doc = json.loads((Path(__file__).parents[2] / "spec/examples/submission.json").read_text())
     assert validate("submission", doc) is None
-    with_email = dict(doc, dco={"version": "1.1", "signed_off_by": "Example Gaffer <gaffer@example.com>"})
+    with_email = dict(doc, dco={"version": "1.1", "signed_off_by": "example_gaffer <gaffer@example.com>"})
     assert validate("submission", with_email) is not None
     with_login = dict(doc, contributor={"github_id": 1, "github_login": "someone"})
     assert validate("submission", with_login) is not None

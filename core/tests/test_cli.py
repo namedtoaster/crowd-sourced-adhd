@@ -16,7 +16,7 @@ def test_bundle_then_check(tmp_path: Path, capsys) -> None:
     (work / "beat.md").write_text(GOOD_BEAT)
 
     assert main(["bundle", str(work), "--slot", str(slot_path), "--crew-no", "1000001",
-                 "--name", "Example Writer"]) == 0
+                 "--display-name", "example_writer"]) == 0
     assert (work / "submission.json").is_file()
 
     assert main(["check", str(work), "--slot", str(slot_path)]) == 0

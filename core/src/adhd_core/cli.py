@@ -62,7 +62,7 @@ def cmd_bundle(args: argparse.Namespace) -> int:
         return EXIT_USAGE
     manifest = build_manifest(
         root, slot,
-        crew_no=args.crew_no, name=args.name, signed_off_by=args.sign_off or args.name,
+        crew_no=args.crew_no, display_name=args.display_name, signed_off_by=args.display_name,
         client=f"adhd-cli {__version__}", core=__version__,
         revision=args.revision, message=args.message,
     )
@@ -99,8 +99,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("folder", type=Path)
     p.add_argument("--slot", type=Path, required=True)
     p.add_argument("--crew-no", type=int, required=True, help="Your public crew number.")
-    p.add_argument("--name", required=True, help="Your name as it should appear in the credits.")
-    p.add_argument("--sign-off", help="Name you sign the DCO with, if different. No email.")
+    p.add_argument("--display-name", required=True, help="The public name you chose. Shown in credits and used to sign the DCO.")
     p.add_argument("--revision", type=int, default=1)
     p.add_argument("--message")
     p.set_defaults(func=cmd_bundle)

@@ -63,6 +63,39 @@ What it took:
 
 **Decision:** animation travels as USD skeletal animation on a library rig.
 
+## E. Older Blender versions: 4.5 and newer come through identical
+
+A prop (subdivided monkey, 2,012 vertices, UVs), the three materials from
+spike A as recipes, and the skinned animation from spike B were exported
+from each Blender with [versions/spike_versions.py](versions/spike_versions.py),
+then checked and rendered on the pinned 5.2.4. Run on macOS arm64,
+20 Nov 2026. Raw results in [versions/results/](versions/results/).
+
+| Made in | Prop | Materials vs native 5.2 (0 to 255) | Animation round trip | Animation on library rig | `pxr` |
+|---|---|---|---|---|---|
+| 4.2.23 LTS | identical | **rust off by 4.9** | 0.001 mm | 0.001 mm | 0.24.5 |
+| 4.5.16 LTS | identical | 0.0 | 0.001 mm | 0.001 mm | 0.25.2 |
+| 5.1.2 | identical | 0.0 | 0.0011 mm | 0.0011 mm | 0.25.8 |
+| 5.2.4 LTS | identical | 0.0 | 0.0011 mm | 0.0011 mm | 0.26.3 |
+
+Every recipe rebuilt with no dropped nodes, values or links. The rust
+material differs because the Bump node changed after 4.2: its default
+Distance went from 1.0 to 0.001 and a Filter Width input was added. The
+recipe faithfully carries 4.2's value, but the node no longer behaves the
+same, so the rebuild is 2.7 from what the artist saw in 4.2, against 0.5
+for materials without a bump (that 0.5 is Eevee itself changing between
+4.2 and 5.2). Between 4.5 and 5.2, Eevee renders the same scene within
+0.02.
+
+![rust as made in 4.2](versions/results/rust-4.2-as-made.png)
+
+![4.2 recipe rebuilt in 5.2](versions/results/rust-4.2-rebuilt-in-5.2.png)
+
+Top: as the artist saw it in 4.2. Bottom: the same recipe rebuilt in 5.2.
+
+**Decision:** the add-on supports Blender 4.5 and newer. It also means one
+animation code path, since 4.5 already has slotted actions.
+
 ## Follow ups
 
 - Export animation without the mesh. The test file is 900 KB because it

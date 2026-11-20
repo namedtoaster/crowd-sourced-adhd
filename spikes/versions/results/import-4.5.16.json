@@ -1,0 +1,70 @@
+{
+  "pinned": {
+    "blender": "5.2.4 LTS",
+    "python": "3.13.13",
+    "eevee_id": "BLENDER_EEVEE",
+    "pxr": "0.26.3"
+  },
+  "made_in": {
+    "blender": "4.5.16 LTS",
+    "python": "3.11.15",
+    "eevee_id": "BLENDER_EEVEE_NEXT",
+    "pxr": "0.25.2"
+  },
+  "prop": {
+    "pass": true,
+    "counts": {
+      "verts": [
+        2012,
+        2012
+      ],
+      "faces": [
+        1968,
+        1968
+      ],
+      "loops": [
+        7872,
+        7872
+      ],
+      "uv_layers": [
+        1,
+        1
+      ]
+    },
+    "max_error_mm": 0.0,
+    "vertex_order_kept": true
+  },
+  "materials": {
+    "pass": true,
+    "problems": [],
+    "diff": {
+      "mean_0_255": 0.0,
+      "per_material_0_255": {
+        "clay": 0.0,
+        "rust": 0.0,
+        "toon": 0.0
+      },
+      "pixels_off_by_more_than_8": 0.0
+    },
+    "noise_floor": {
+      "mean_0_255": 0.0,
+      "per_material_0_255": {
+        "clay": 0.0,
+        "rust": 0.0,
+        "toon": 0.0
+      },
+      "pixels_off_by_more_than_8": 0.0
+    }
+  },
+  "animation_roundtrip": {
+    "pass": true,
+    "max_error_mm": 0.001,
+    "worst_frame": 23
+  },
+  "animation_library_rig": {
+    "pass": true,
+    "max_error_mm": 0.001,
+    "worst_frame": 23
+  },
+  "pass": true
+}

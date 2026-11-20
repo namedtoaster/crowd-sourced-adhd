@@ -1,0 +1,36 @@
+{
+  "env": {
+    "blender": "5.2.4 LTS",
+    "python": "3.13.13",
+    "eevee_id": "BLENDER_EEVEE",
+    "pxr": "0.26.3"
+  },
+  "dropped_export_options": {
+    "prop": [],
+    "anim": []
+  },
+  "recipe_node_types": {
+    "clay": [
+      "ShaderNodeBsdfPrincipled",
+      "ShaderNodeOutputMaterial"
+    ],
+    "rust": [
+      "ShaderNodeBsdfPrincipled",
+      "ShaderNodeBump",
+      "ShaderNodeMapRange",
+      "ShaderNodeOutputMaterial",
+      "ShaderNodeTexNoise",
+      "ShaderNodeValToRGB"
+    ],
+    "toon": [
+      "ShaderNodeBsdfDiffuse",
+      "ShaderNodeEmission",
+      "ShaderNodeLayerWeight",
+      "ShaderNodeMix",
+      "ShaderNodeOutputMaterial",
+      "ShaderNodeShaderToRGB",
+      "ShaderNodeValToRGB"
+    ]
+  },
+  "action_api": "layered"
+}

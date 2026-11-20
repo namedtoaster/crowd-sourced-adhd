@@ -1,0 +1,495 @@
+[
+  {
+    "schema": "adhd/material-recipe@0",
+    "blender": "5.2.4 LTS",
+    "name": "clay",
+    "nodes": [
+      {
+        "type": "ShaderNodeBsdfPrincipled",
+        "name": "Principled BSDF",
+        "props": {
+          "distribution": "MULTI_GGX",
+          "subsurface_method": "RANDOM_WALK"
+        },
+        "inputs": {
+          "Base Color": [
+            0.75,
+            0.3499999940395355,
+            0.20000000298023224,
+            1.0
+          ],
+          "Metallic": 0.0,
+          "Roughness": 0.800000011920929,
+          "IOR": 1.5,
+          "Alpha": 1.0,
+          "Thin Wall": false,
+          "Normal": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Diffuse Roughness": 0.0,
+          "Subsurface Weight": 0.0,
+          "Subsurface Radius": [
+            1.0,
+            0.20000000298023224,
+            0.10000000149011612
+          ],
+          "Subsurface Scale": 0.004999999888241291,
+          "Subsurface Anisotropy": 0.0,
+          "Specular IOR Level": 0.5,
+          "Specular Tint": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Anisotropic": 0.0,
+          "Anisotropic Rotation": 0.0,
+          "Tangent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Transmission Weight": 0.0,
+          "Coat Weight": 0.0,
+          "Coat Roughness": 0.029999999329447746,
+          "Coat IOR": 1.5,
+          "Coat Tint": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Coat Normal": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Sheen Weight": 0.0,
+          "Sheen Roughness": 0.5,
+          "Sheen Tint": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Emission Color": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Emission Strength": 0.0,
+          "Thin Film Thickness": 0.0,
+          "Thin Film IOR": 1.3300000429153442
+        }
+      },
+      {
+        "type": "ShaderNodeOutputMaterial",
+        "name": "Material Output",
+        "props": {
+          "target": "ALL"
+        },
+        "inputs": {
+          "Displacement": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Thickness": 0.0
+        }
+      }
+    ],
+    "links": [
+      {
+        "from": "Principled BSDF",
+        "out": "BSDF",
+        "to": "Material Output",
+        "in": "Surface"
+      }
+    ]
+  },
+  {
+    "schema": "adhd/material-recipe@0",
+    "blender": "5.2.4 LTS",
+    "name": "rust",
+    "nodes": [
+      {
+        "type": "ShaderNodeBsdfPrincipled",
+        "name": "Principled BSDF",
+        "props": {
+          "distribution": "MULTI_GGX",
+          "subsurface_method": "RANDOM_WALK"
+        },
+        "inputs": {
+          "Metallic": 0.0,
+          "IOR": 1.5,
+          "Alpha": 1.0,
+          "Thin Wall": false,
+          "Diffuse Roughness": 0.0,
+          "Subsurface Weight": 0.0,
+          "Subsurface Radius": [
+            1.0,
+            0.20000000298023224,
+            0.10000000149011612
+          ],
+          "Subsurface Scale": 0.004999999888241291,
+          "Subsurface Anisotropy": 0.0,
+          "Specular IOR Level": 0.5,
+          "Specular Tint": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Anisotropic": 0.0,
+          "Anisotropic Rotation": 0.0,
+          "Tangent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Transmission Weight": 0.0,
+          "Coat Weight": 0.0,
+          "Coat Roughness": 0.029999999329447746,
+          "Coat IOR": 1.5,
+          "Coat Tint": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Coat Normal": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Sheen Weight": 0.0,
+          "Sheen Roughness": 0.5,
+          "Sheen Tint": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Emission Color": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Emission Strength": 0.0,
+          "Thin Film Thickness": 0.0,
+          "Thin Film IOR": 1.3300000429153442
+        }
+      },
+      {
+        "type": "ShaderNodeOutputMaterial",
+        "name": "Material Output",
+        "props": {
+          "target": "ALL"
+        },
+        "inputs": {
+          "Displacement": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Thickness": 0.0
+        }
+      },
+      {
+        "type": "ShaderNodeTexNoise",
+        "name": "Noise Texture",
+        "props": {
+          "noise_dimensions": "3D",
+          "noise_type": "FBM",
+          "normalize": true
+        },
+        "inputs": {
+          "Vector": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Scale": 6.0,
+          "Detail": 8.0,
+          "Roughness": 0.5,
+          "Lacunarity": 2.0,
+          "Distortion": 0.0
+        }
+      },
+      {
+        "type": "ShaderNodeValToRGB",
+        "name": "Color Ramp",
+        "props": {},
+        "inputs": {},
+        "ramp": {
+          "interpolation": "LINEAR",
+          "color_mode": "RGB",
+          "elements": [
+            [
+              0.3499999940395355,
+              [
+                0.11999999731779099,
+                0.05000000074505806,
+                0.019999999552965164,
+                1.0
+              ]
+            ],
+            [
+              0.5,
+              [
+                0.44999998807907104,
+                0.20000000298023224,
+                0.07999999821186066,
+                1.0
+              ]
+            ],
+            [
+              0.699999988079071,
+              [
+                0.800000011920929,
+                0.3799999952316284,
+                0.10000000149011612,
+                1.0
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "ShaderNodeMapRange",
+        "name": "Map Range",
+        "props": {
+          "clamp": true,
+          "interpolation_type": "LINEAR",
+          "data_type": "FLOAT"
+        },
+        "inputs": {
+          "From Min": 0.0,
+          "From Max": 1.0,
+          "To Min": 0.4000000059604645,
+          "To Max": 0.949999988079071
+        }
+      },
+      {
+        "type": "ShaderNodeBump",
+        "name": "Bump",
+        "props": {
+          "invert": false
+        },
+        "inputs": {
+          "Strength": 0.4000000059604645,
+          "Distance": 0.0010000000474974513,
+          "Filter Width": 0.10000000149011612,
+          "Normal": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    ],
+    "links": [
+      {
+        "from": "Principled BSDF",
+        "out": "BSDF",
+        "to": "Material Output",
+        "in": "Surface"
+      },
+      {
+        "from": "Noise Texture",
+        "out": "Fac",
+        "to": "Color Ramp",
+        "in": "Fac"
+      },
+      {
+        "from": "Color Ramp",
+        "out": "Color",
+        "to": "Principled BSDF",
+        "in": "Base Color"
+      },
+      {
+        "from": "Noise Texture",
+        "out": "Fac",
+        "to": "Map Range",
+        "in": "Value"
+      },
+      {
+        "from": "Map Range",
+        "out": "Result",
+        "to": "Principled BSDF",
+        "in": "Roughness"
+      },
+      {
+        "from": "Noise Texture",
+        "out": "Fac",
+        "to": "Bump",
+        "in": "Height"
+      },
+      {
+        "from": "Bump",
+        "out": "Normal",
+        "to": "Principled BSDF",
+        "in": "Normal"
+      }
+    ]
+  },
+  {
+    "schema": "adhd/material-recipe@0",
+    "blender": "5.2.4 LTS",
+    "name": "toon",
+    "nodes": [
+      {
+        "type": "ShaderNodeOutputMaterial",
+        "name": "Material Output",
+        "props": {
+          "target": "ALL"
+        },
+        "inputs": {
+          "Displacement": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "Thickness": 0.0
+        }
+      },
+      {
+        "type": "ShaderNodeBsdfDiffuse",
+        "name": "Diffuse BSDF",
+        "props": {},
+        "inputs": {
+          "Color": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "Roughness": 0.0,
+          "Normal": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "type": "ShaderNodeShaderToRGB",
+        "name": "Shader to RGB",
+        "props": {},
+        "inputs": {}
+      },
+      {
+        "type": "ShaderNodeValToRGB",
+        "name": "Color Ramp",
+        "props": {},
+        "inputs": {},
+        "ramp": {
+          "interpolation": "CONSTANT",
+          "color_mode": "RGB",
+          "elements": [
+            [
+              0.0,
+              [
+                0.05000000074505806,
+                0.10000000149011612,
+                0.25,
+                1.0
+              ]
+            ],
+            [
+              0.44999998807907104,
+              [
+                0.30000001192092896,
+                0.6000000238418579,
+                0.8999999761581421,
+                1.0
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "ShaderNodeLayerWeight",
+        "name": "Layer Weight",
+        "props": {},
+        "inputs": {
+          "Blend": 0.25,
+          "Normal": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "type": "ShaderNodeMix",
+        "name": "Mix",
+        "props": {
+          "data_type": "RGBA",
+          "factor_mode": "UNIFORM",
+          "blend_type": "MIX",
+          "clamp_factor": true,
+          "clamp_result": false
+        },
+        "inputs": {
+          "B_Color": [
+            1.0,
+            0.8999999761581421,
+            0.699999988079071,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ShaderNodeEmission",
+        "name": "Emission",
+        "props": {},
+        "inputs": {
+          "Strength": 1.0
+        }
+      }
+    ],
+    "links": [
+      {
+        "from": "Diffuse BSDF",
+        "out": "BSDF",
+        "to": "Shader to RGB",
+        "in": "Shader"
+      },
+      {
+        "from": "Shader to RGB",
+        "out": "Color",
+        "to": "Color Ramp",
+        "in": "Fac"
+      },
+      {
+        "from": "Color Ramp",
+        "out": "Color",
+        "to": "Mix",
+        "in": "A_Color"
+      },
+      {
+        "from": "Layer Weight",
+        "out": "Facing",
+        "to": "Mix",
+        "in": "Factor_Float"
+      },
+      {
+        "from": "Mix",
+        "out": "Result_Color",
+        "to": "Emission",
+        "in": "Color"
+      },
+      {
+        "from": "Emission",
+        "out": "Emission",
+        "to": "Material Output",
+        "in": "Surface"
+      }
+    ]
+  }
+]

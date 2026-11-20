@@ -91,7 +91,7 @@ safe because of four rules:
 
 ### core (`adhd_core`)
 
-- Python 3.11 or newer. Blender 4.2 ships 3.11 and Blender 5.2 ships 3.13,
+- Python 3.11 or newer. Blender 4.5 ships 3.11 and Blender 5.2 ships 3.13,
   and the add-on imports the same code.
 - Two layers of checks:
   - **Plain checks** run anywhere with no Blender: word counts, image sizes,
@@ -107,7 +107,7 @@ safe because of four rules:
 
 ### Blender add-on
 
-- Blender 4.2+ extension format (`blender_manifest.toml`), served from our
+- Blender extension format (`blender_manifest.toml`, `blender_version_min = "4.5.0"`), served from our
   own extension repository URL. Blender then installs and updates it from
   inside Preferences, no zip juggling after the first time.
 - Sidebar panel, in this order:
@@ -174,8 +174,8 @@ public bundle format defined in `spec/`.
 
 ## Hard problems to settle first
 
-Each of these is a short spike before any real building. A, B and D are
-settled; full results and renders are in [spikes/README.md](../spikes/README.md).
+Each of these is a short spike before any real building. A, B, D and E
+are settled; full results and renders are in [spikes/README.md](../spikes/README.md).
 
 **A. Materials: settled, recipes.** Through USD, every node graph collapses
 to a bare Principled BSDF, with or without MaterialX (Blender writes
@@ -202,35 +202,40 @@ version, or verdicts and frames will drift. CI, the desktop app and the
 render client pin the same version. The add-on supports a range but sends
 its exports to the pinned version for the full check. **Settled: pin
 Blender 5.2 LTS** (supported to July 2028; Eevee renders on it were bit for
-bit repeatable in spike A). The add-on supports 4.2 and newer, see E.
+bit repeatable in spike A). The add-on supports 4.5 and newer, see E.
 
-**E. Older Blender versions: to test.** Spikes A and B only exported from
-5.2 into 5.2. Export a prop, a material recipe and an animation from
-4.2 and from 4.5, then check and render them on the pinned 5.2. If they
-come through intact, the 4.2 floor holds; if not, raise it. Also confirm
-the `pxr` USD bindings are importable inside 4.2, since scene loading
-depends on them.
+**E. Older Blender versions: settled, 4.5 is the floor.** A prop, three
+material recipes and a skinned animation were exported from 4.2.23,
+4.5.16, 5.1.2 and 5.2.4, then checked and rendered on 5.2.4 (20 Nov 2026,
+results in [spikes/README.md](../spikes/README.md)). From 4.5 on
+everything is identical. From 4.2 the prop and the animation are fine, but
+a material using the Bump node renders visibly different from what the
+artist saw, because the node changed after 4.2 (its default Distance went
+from 1.0 to 0.001 and a Filter Width input was added). 4.2 is also out of
+support since July 2026. A 4.5 floor also means one animation code path:
+4.5 already has slotted actions, which 5.0 made the only kind. The `pxr`
+USD bindings import in every version tested.
 
-**F. Eevee previews on free runners: to test.** Free GitHub Actions
-runners have no GPU, and Eevee normally needs one. Try the pinned Blender
-headless on a standard runner with software OpenGL. If Eevee runs in
-reasonable time, previews use Eevee so they match the film. If not,
-previews use Workbench, which is fine for an image reviewers look at.
+What the add-on still bridges across 4.5 and newer, by feature detection,
+not version numbers:
 
-What the add-on has to bridge across 4.2 and newer, all small shims chosen
-by feature detection, not version numbers:
-
-- Animation storage: 4.2 and 4.3 have only the legacy action API, 4.4 and
-  4.5 have both, 5.0 and newer have only slotted actions.
 - The Eevee engine id is `BLENDER_EEVEE_NEXT` before 5.0 and
   `BLENDER_EEVEE` from 5.0.
 - Some USD export options were renamed or removed in 5.0.
 - Python 3.11 up to 5.0, 3.13 from 5.1. `adhd_core` already needs only
   3.11 and is pure Python.
 
-Material recipes record the Blender version that made them, and the node
-allowlist holds only nodes that are the same across the supported range
-(5.0 removed Point Density and some Sky Texture inputs, for example).
+Material recipes record the Blender version that made them, and carry
+every input value including defaults, which is what keeps 4.5 recipes
+identical on 5.2. The node allowlist holds only nodes that behave the same
+across the supported range (5.0 removed Point Density and some Sky Texture
+inputs, for example).
+
+**F. Eevee previews on free runners: to test.** Free GitHub Actions
+runners have no GPU, and Eevee normally needs one. Try the pinned Blender
+headless on a standard runner with software OpenGL. If Eevee runs in
+reasonable time, previews use Eevee so they match the film. If not,
+previews use Workbench, which is fine for an image reviewers look at.
 
 ## Scene loading (to design later)
 
@@ -271,7 +276,7 @@ Follows the film's phases, so each tool exists just before it is needed.
    the bundle checks, story and storyboard checks and the `adhd` CLI, with
    tests. Submission CI (`adhd ci` plus the workflow), the sandbox film
    and the one repo layout followed the same day, then spikes A and B.
-   Still to do: sound checks, spikes C, E and F, a first run on real GitHub.
+   Still to do: sound checks, spikes C and F, a first run on real GitHub.
 1. **Spine and Story (phases 1 and 2).** Text and image submissions through
    the web form. No install for anyone.
 2. **Greybox (phase 3).** Blender add-on, blocking role only: sign in,
@@ -293,12 +298,13 @@ Follows the film's phases, so each tool exists just before it is needed.
   Apache 2.0 (patent grant, and compatible with GPL 3).
 - 2026-11-13: Materials travel as JSON node recipes, animation as USD
   skeletal animation on library rigs (spikes A and B).
-- 2026-11-20: The add-on supports Blender 4.2 and newer, with no upper
+- 2026-11-20: The add-on supports Blender 4.5 and newer, with no upper
   limit until a release breaks something. CI tests the last release of each
   LTS line plus the newest release. Checks and renders pin Blender 5.2 LTS.
-  The 4.2 floor holds only if spike E passes. 4.2 is the oldest version
-  that installs extensions from a repository, and students and indie crews
-  often stay on an old LTS for years.
+  The floor was 4.2 (the oldest version that installs extensions from a
+  repository) until spike E showed Bump node materials from 4.2 render
+  differently on 5.2; 4.5 to 5.2 is identical. Students and indie crews
+  often stay on an old LTS for years, which is why the floor is an LTS.
 - 2026-11-20: Render cost is checked by counts (lights, shadow casting
   lights, triangles, texture memory), never by timing a render, so the
   same file always gets the same verdict. The preview render is for

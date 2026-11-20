@@ -280,8 +280,12 @@ Follows the film's phases, so each tool exists just before it is needed.
    the bundle checks, story and storyboard checks and the `adhd` CLI, with
    tests. Submission CI (`adhd ci` plus the workflow), the sandbox film
    and the one repo layout followed the same day, then spikes A and B.
-   Still to do: sound checks, spike C, a first run of submission CI on real
-   GitHub.
+   First run on real GitHub done 20 Nov 2026: a passing beat passed every
+   check, and a failing one was caught three ways (an edit outside its entry
+   folder, a missing field, 128 words against 80), each with a plain
+   message. Still to do: sound checks, and entry folders and
+   `submission.json` keyed on the backend's contributor id instead of a
+   GitHub id, since contributors no longer need GitHub accounts.
 1. **Spine and Story (phases 1 and 2).** Text and image submissions through
    the web form. No install for anyone.
 2. **Greybox (phase 3).** Blender add-on, blocking role only: sign in,

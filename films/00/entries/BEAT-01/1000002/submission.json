@@ -1,0 +1,25 @@
+{
+  "schema": "adhd/submission@0",
+  "slot": "BEAT-01",
+  "film": 0,
+  "contributor": {
+    "github_id": 1000002,
+    "github_login": "test_writer"
+  },
+  "revision": 1,
+  "files": [
+    {
+      "path": "beat.md",
+      "sha256": "85b1278d90fa4f12f35774e653cc6fd6dcd1f0ca8a4d62e65fc24c2381b9294c",
+      "bytes": 143
+    }
+  ],
+  "tools": {
+    "client": "hand made test",
+    "core": "0.1.0"
+  },
+  "dco": {
+    "version": "1.1",
+    "signed_off_by": "Test Writer <1000002+test_writer@users.noreply.github.com>"
+  }
+}

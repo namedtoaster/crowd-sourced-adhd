@@ -1,0 +1,23 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "SP-OUTLINE",
+  "film": 1,
+  "phase": "spine",
+  "role": "story",
+  "mode": "open-call",
+  "title": "Beat outline",
+  "brief": "The film in 9 beats. For each beat, a short title, what it has to achieve, and what is true at its start and its end.",
+  "depends_on": [
+    "SP-CAST",
+    "SP-PLACES"
+  ],
+  "outputs": [
+    {
+      "path": "idea.md",
+      "kind": "markdown"
+    }
+  ],
+  "limits": {
+    "max_words": 700
+  }
+}

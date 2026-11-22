@@ -1,0 +1,22 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "SP-PLACES",
+  "film": 1,
+  "phase": "spine",
+  "role": "story",
+  "mode": "open-call",
+  "title": "Places",
+  "brief": "1 to 3 places for the picked logline. For each one, a name, then a sentence or two on how it looks and feels.",
+  "depends_on": [
+    "SP-LOGLINE"
+  ],
+  "outputs": [
+    {
+      "path": "idea.md",
+      "kind": "markdown"
+    }
+  ],
+  "limits": {
+    "max_words": 150
+  }
+}

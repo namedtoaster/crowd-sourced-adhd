@@ -1,0 +1,20 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "SP-LOGLINE",
+  "film": 1,
+  "phase": "spine",
+  "role": "story",
+  "mode": "open-call",
+  "title": "Logline",
+  "brief": "The whole film in one sentence: who it is about, what happens, and why we would want to watch it.",
+  "depends_on": [],
+  "outputs": [
+    {
+      "path": "idea.md",
+      "kind": "markdown"
+    }
+  ],
+  "limits": {
+    "max_words": 40
+  }
+}

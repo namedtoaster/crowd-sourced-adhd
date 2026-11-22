@@ -1,0 +1,22 @@
+{
+  "schema": "adhd/slot@0",
+  "id": "SP-CAST",
+  "film": 1,
+  "phase": "spine",
+  "role": "story",
+  "mode": "open-call",
+  "title": "Cast",
+  "brief": "1 to 3 characters for the picked logline. For each one, a name, then a sentence or two on who they are and how they move.",
+  "depends_on": [
+    "SP-LOGLINE"
+  ],
+  "outputs": [
+    {
+      "path": "idea.md",
+      "kind": "markdown"
+    }
+  ],
+  "limits": {
+    "max_words": 200
+  }
+}

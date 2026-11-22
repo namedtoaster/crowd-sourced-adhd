@@ -1,0 +1,25 @@
+{
+  "dco": {
+    "version": "1.1",
+    "signed_off_by": "namedtoaster"
+  },
+  "film": 1,
+  "slot": "SP-LOGLINE",
+  "files": [
+    {
+      "path": "idea.md",
+      "bytes": 167,
+      "sha256": "bd90bdd4026f7fb40260cd3119e44b71b86532a76129283af667cf9971624a54"
+    }
+  ],
+  "tools": {
+    "core": "0.1.0",
+    "client": "adhd-web 0.1.0"
+  },
+  "schema": "adhd/submission@0",
+  "revision": 1,
+  "contributor": {
+    "crew_no": 1000001,
+    "display_name": "namedtoaster"
+  }
+}
